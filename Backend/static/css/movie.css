@@ -1,0 +1,1186 @@
+/* ===========================
+   MOVIE PAGE
+=========================== */
+
+.movie-page{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:0;
+}
+
+.movie-hero{
+
+    position:relative;
+
+    width:100%;
+
+    min-height:100vh;
+
+    overflow:visible;
+
+}
+
+.hero-backdrop{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    object-fit:cover;
+
+    z-index:-3;
+
+}
+
+.hero-overlay{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    z-index:-2;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(10,8,18,.96) 18%,
+            rgba(10,8,18,.75) 45%,
+            rgba(10,8,18,.45) 70%,
+            rgba(10,8,18,.15) 100%
+        ),
+
+        linear-gradient(
+            to top,
+            rgba(10,8,18,.98),
+            rgba(10,8,18,.20)
+        );
+}
+
+.hero-content{
+
+    width:min(1600px,95vw);
+
+    margin:0 auto;
+
+    padding:60px 50px 80px;
+
+    display:grid;
+
+    grid-template-columns:340px 1fr;
+
+    gap:70px;
+
+    align-items:start;
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+
+
+.movie-poster{
+    width:100%;
+    max-width:330;
+    border-radius:24px;
+
+    box-shadow:
+        0 35px 80px rgba(0,0,0,.65),
+        0 0 30px rgba(255,90,200,.18);
+
+    transition:.35s ease;
+}
+
+.poster-section{
+
+    width:100%;
+    max-width:330;
+
+    position:sticky;
+
+    top:120px;
+
+    align-self:start;
+
+}
+
+.movie-poster:hover{
+    transform:
+        translateY(-10px)
+        scale(1.03);
+
+    box-shadow:
+        0 45px 90px rgba(0,0,0,.75),
+        0 0 45px rgba(255,90,200,.30);
+}
+
+.movie-details-info{
+
+    width:100%;
+
+    max-width:1000px;
+
+    min-width:0;
+
+    overflow:hidden;
+
+}
+
+.movie-details-info h1{
+    font-size:52px;
+    font-weight:800;
+    line-height:1.1;
+    margin-bottom:22px;
+}
+
+.movie-meta{
+    display:flex;
+    gap:25px;
+    flex-wrap:wrap;
+
+    font-size:18px;
+    color:#d9d9d9;
+
+    margin-bottom:30px;
+}
+
+/* ===========================
+   MOVIE ACTION BUTTONS
+=========================== */
+
+.play-btn,
+.watchlist-btn,
+.watched-btn{
+    padding:16px 28px;
+    border:none;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:600;
+    font-family:'Poppins',sans-serif;
+    cursor:pointer;
+    transition:all .3s ease;
+}
+
+/* Play Trailer */
+
+.play-btn{
+    background:linear-gradient(90deg,#ff4fa3,#a855f7);
+    color:white;
+    box-shadow:0 10px 30px rgba(255,79,163,.35);
+}
+
+.play-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 16px 40px rgba(255,79,163,.45);
+}
+
+/* Watchlist */
+
+.watchlist-btn{
+    background:rgba(255,255,255,.08);
+    color:white;
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(12px);
+}
+
+.watchlist-btn:hover{
+    background:rgba(255,255,255,.14);
+}
+
+/* Watched */
+
+.watched-btn{
+    background:transparent;
+    color:white;
+    border:1px solid rgba(255,255,255,.22);
+}
+
+.watched-btn:hover{
+    background:rgba(255,255,255,.08);
+}
+
+
+/* =========================
+   Genre Chips
+========================= */
+
+.genre-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin:20px 0 28px;
+}
+
+.genre-chip{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.18);
+    color:#fff;
+    padding:8px 18px;
+    border-radius:30px;
+    font-size:.95rem;
+    font-weight:500;
+    backdrop-filter:blur(8px);
+}
+
+
+/* =========================
+   Movie Information
+========================= */
+
+.movie-extra-info{
+
+    display:grid;
+
+    grid-template-columns:repeat(2, minmax(320px,1fr));
+
+    gap:20px;
+
+    width:100%;
+
+    align-items:stretch;
+
+}
+
+.info-box{
+
+    width:100%;
+
+    min-height:100px;
+
+    padding:22px;
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.info-box strong{
+    display:block;
+    color:#ff69b4;
+    font-size:.9rem;
+    margin-bottom:8px;
+    letter-spacing:.5px;
+}
+
+.info-box span{
+    color:white;
+    font-size:1rem;
+}
+
+
+/* =========================
+   Movie Buttons
+========================= */
+
+.movie-buttons{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-top:35px;
+}
+
+
+.play-btn{
+
+    background:linear-gradient(135deg,#ff4fa3,#7b3fe4);
+    color:white;
+
+}
+
+.watchlist-btn{
+
+    background:#27273a;
+    color:white;
+
+}
+
+.watched-btn{
+
+    background:#27273a;
+    color:white;
+
+}
+
+.play-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.watchlist-btn:hover,
+.watched-btn:hover{
+
+    background:#3a3a52;
+
+}
+
+
+/* =========================
+   Overview
+========================= */
+
+.movie-overview{
+    width:100%;
+    max-width:850px;
+    line-height:1.8;
+    color:#dddddd;
+    font-size:1.05rem;
+
+}
+
+/* ===========================================
+   OTT SECTION
+=========================================== */
+
+.ott-section{
+    margin-top:45px;
+}
+
+.ott-section h3{
+    color:#ffffff;
+    font-size:1.5rem;
+    margin-bottom:22px;
+}
+
+.ott-logos{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+
+}
+
+.ott-card{
+
+    width:150px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+
+    padding:18px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    transition:.35s ease;
+
+}
+
+.ott-card:hover{
+
+    transform:translateY(-8px);
+    border-color:#ff4fa3;
+    box-shadow:0 10px 25px rgba(255,79,163,.25);
+
+}
+
+.ott-card img{
+
+    width:65px;
+    height:65px;
+
+    border-radius:15px;
+    object-fit:cover;
+
+    margin-bottom:14px;
+
+}
+
+.ott-card span{
+
+    color:white;
+    font-weight:600;
+    text-align:center;
+    margin-bottom:6px;
+
+}
+
+.ott-card small{
+
+    color:#b7b7b7;
+
+}
+
+.no-ott{
+
+    color:#bdbdbd;
+    font-size:1rem;
+
+}
+
+@media (max-width:1000px){
+    .hero-content{
+        grid-template-columns:1fr;
+    }
+
+    .poster-section{
+        margin:auto;
+        position:static;
+    }
+
+    .movie-details-info{
+        text-align:center;
+    }
+
+    .genre-tags{
+        justify-content:center;
+    }
+
+    .movie-buttons{
+        justify-content:center;
+    }
+}
+
+/* ===========================================
+   TOP CAST
+=========================================== */
+
+.cast-section{
+
+    width:100%;
+
+    max-width:1000px;
+
+    margin-top:60px;
+
+}
+
+.cast-section h3{
+    font-size:30px;
+    margin-bottom:25px;
+}
+
+.cast-grid{
+
+    display:flex;
+
+    flex-wrap:nowrap;
+
+    gap:22px;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+
+    width:100%;
+
+    max-width:1000px;
+
+    padding-bottom:15px;
+
+    scrollbar-gutter:stable;
+
+}
+
+.cast-grid::-webkit-scrollbar{
+
+    height:8px;
+
+}
+
+.cast-grid::-webkit-scrollbar-track{
+
+    background:rgba(255,255,255,.08);
+
+    border-radius:20px;
+
+}
+
+.cast-grid::-webkit-scrollbar-thumb{
+
+    background:#ff4fa3;
+
+    border-radius:20px;
+
+}
+
+.cast-grid::-webkit-scrollbar-thumb:hover{
+
+    background:#ff6bb8;
+
+}
+
+.cast-card{
+
+    flex:0 0 180px;
+    width:180px;
+    min-width:180px;
+    max-width:180px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    overflow:hidden;
+    transition:.35s;
+}
+
+.cast-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#ff4fa3;
+
+    box-shadow:0 10px 30px rgba(255,79,163,.25);
+}
+
+.cast-card img{
+
+    width:100%;
+
+    aspect-ratio:2/3;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+.cast-card h4{
+
+    padding:14px 14px 4px;
+
+    font-size:17px;
+
+    color:white;
+}
+
+.cast-card p{
+
+    padding:0 14px 16px;
+
+    color:#bfbfbf;
+
+    font-size:14px;
+}
+
+.cast-grid::-webkit-scrollbar{
+
+    height:10px;
+
+}
+
+.cast-grid::-webkit-scrollbar-track{
+
+    background:rgba(255,255,255,.08);
+
+    border-radius:20px;
+
+}
+
+.cast-grid::-webkit-scrollbar-thumb{
+
+    background:#7d7d7d;
+
+    border-radius:20px;
+
+}
+
+.cast-grid::-webkit-scrollbar-thumb:hover{
+
+    background:#b1b1b1;
+
+}
+
+
+/* ===========================================
+   TRAILER POPUP
+=========================================== */
+
+.trailer-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.88);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+    backdrop-filter:blur(8px);
+
+}
+
+.trailer-content{
+
+    position:relative;
+
+    width:min(1000px,90vw);
+
+    aspect-ratio:16/9;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 25px 80px rgba(0,0,0,.65);
+
+    background:#000;
+
+}
+
+.trailer-content iframe{
+
+    width:100%;
+
+    height:100%;
+
+    border:none;
+
+}
+
+.close-trailer{
+
+    position:absolute;
+
+    top:15px;
+
+    right:15px;
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.75);
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    z-index:10;
+
+    transition:.3s;
+
+}
+
+.close-trailer:hover{
+
+    background:#ff4fa3;
+
+    transform:scale(1.1);
+
+}
+
+.imdb-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#f5c518;
+    color:#111;
+    font-weight:700;
+    font-size:13px;
+    padding:4px 8px;
+    border-radius:6px;
+    margin-right:8px;
+}
+
+/* =====================================
+   LANGUAGE FILTER
+===================================== */
+
+.language-section{
+    margin-top:35px;
+}
+
+.filter-title{
+    color:#fff;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+.language-filter{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.language-chip{
+
+    background:#4d2578;
+    color:#fff;
+
+    border:none;
+
+    padding:14px 24px;
+
+    border-radius:999px;
+
+    font-size:17px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.language-chip:hover{
+
+    background:#65369b;
+
+    transform:translateY(-2px);
+
+}
+
+.language-chip.active{
+
+    background:linear-gradient(
+        135deg,
+        #ff5ea8,
+        #9d4dff
+    );
+
+    box-shadow:0 0 18px rgba(255,90,170,.45);
+
+}
+
+.genre-chip-btn{
+
+    background:#4d2578;
+    color:#fff;
+
+    border:none;
+
+    padding:14px 24px;
+
+    border-radius:999px;
+
+    font-size:17px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.genre-chip-btn:hover{
+
+    background:#65369b;
+
+}
+
+.genre-chip-btn.active{
+
+    background:linear-gradient(
+        135deg,
+        #ff5ea8,
+        #9d4dff
+    );
+
+    box-shadow:0 0 18px rgba(255,90,170,.45);
+
+}
+
+/* =========================
+   Disabled Trailer Button
+========================= */
+
+.trailer-disabled{
+
+    background:#3a3a46 !important;
+
+    color:#bdbdbd;
+
+    cursor:not-allowed;
+
+    opacity:.85;
+
+    box-shadow:none;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+.trailer-disabled:hover{
+
+    transform:none;
+
+    background:#3a3a46 !important;
+
+    box-shadow:none;
+
+}
+
+/* =========================
+   Custom Tooltip
+========================= */
+
+.trailer-disabled{
+    position:relative;
+}
+
+.trailer-disabled::after{
+
+    content:attr(data-tooltip);
+
+    position:absolute;
+
+    bottom:calc(100% + 12px);
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:#1d1d2b;
+
+    color:#fff;
+
+    padding:8px 14px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    white-space:nowrap;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.25s;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+    pointer-events:none;
+}
+
+.trailer-disabled:hover::after{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+/* ===========================================
+   MOVIE ACTION MESSAGE
+   Watchlist / Watch History confirmation
+=========================================== */
+
+.movie-action-message {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 16px 22px;
+
+    background: rgba(25, 15, 35, 0.96);
+    border: 1px solid rgba(255, 79, 163, 0.65);
+    border-radius: 16px;
+
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+
+    z-index: 10000;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s ease;
+
+    /* IMPORTANT */
+    pointer-events: none;
+}
+
+.movie-action-message.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+
+    /* IMPORTANT: allows clicking the link */
+    pointer-events: auto;
+}
+
+
+/* ===========================================
+   VIEW HISTORY / VIEW WATCHLIST LINK
+=========================================== */
+
+.action-message-link {
+
+    display: inline-block;
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    position: relative;
+
+    z-index: 10001;
+
+    pointer-events: auto;
+
+    white-space: nowrap;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.action-message-link:hover {
+
+    color: #ff69b4;
+
+    text-decoration: underline;
+
+    transform: translateX(2px);
+}
+
+/* =========================================
+   FIX MOVIE POSTER ALIGNMENT
+========================================= */
+
+.movie-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.movie-card img,
+.movie-card .movie-poster {
+    width: 100%;
+    height: 300px;
+    min-height: 300px;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
+}
+
+.movie-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-card h3 {
+    min-height: 48px;
+    margin: 12px 0 8px;
+}
+
+.movie-card .rating {
+    margin-top: auto;
+}
+
+/* =========================================
+   MORE LIKE THIS
+========================================= */
+
+.similar-section {
+    width: 100%;
+    margin-top: 60px;
+}
+
+.similar-section h3 {
+    font-size: 30px;
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+
+/* 5 MOVIES PER ROW */
+
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+
+
+/* LINK */
+
+.similar-grid .movie-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+
+
+
+
+/* CARD */
+
+/* =========================================
+   MORE LIKE THIS
+========================================= */
+
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+
+/* CARD */
+
+.similar-card {
+    height: 500px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    box-sizing: border-box;
+
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    border-radius: 18px;
+
+    transition: 0.3s ease;
+}
+
+
+/* POSTER */
+
+.similar-card img {
+    width: 100%;
+    height: 320px;
+
+    display: block;
+
+    object-fit: contain;
+    object-position: center;
+
+    background: rgba(0, 0, 0, 0.25);
+}
+
+
+/* MOVIE NAME */
+
+.similar-card h4 {
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1.4;
+
+    margin: 14px 15px 8px;
+
+    min-height: 76px;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+
+    overflow: hidden;
+}
+
+
+/* RATING */
+
+.similar-card p {
+    color: #ffd21f;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    margin: auto 15px 16px;
+}
+
+
+/* HOVER */
+
+.similar-card:hover {
+    transform: translateY(-5px);
+
+    border-color: #ff4fa3;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(255, 79, 163, 0.25);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1200px) {
+
+    .similar-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .similar-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .similar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .similar-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

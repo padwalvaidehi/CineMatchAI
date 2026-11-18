@@ -1,0 +1,43 @@
+<div class="logo">
+    <i class="bi bi-film"></i>
+    <span>Lumora</span>
+</div>
+
+<ul class="sidebar-menu">
+
+    <li class="{% if active_page == 'home' %}active{% endif %}">
+        <a href="{{ url_for('home') }}">
+            <i class="bi bi-house-door"></i>
+            Home
+        </a>
+    </li>
+
+    <li class="{% if active_page == 'movies' %}active{% endif %}">
+        <a href="{{ url_for('movies') }}">
+            <i class="bi bi-film"></i>
+            Movies
+        </a>
+    </li>
+
+    <li class="{% if active_page == 'watchlist' %}active{% endif %}">
+        <a href="{{ url_for('watchlist') }}">
+            <i class="bi bi-heart"></i>
+            Watchlist
+        </a>
+    </li>
+
+    <li class="{% if active_page == 'history' %}active{% endif %}">
+        <a href="{{ url_for('history') }}">
+            <i class="bi bi-clock-history"></i>
+            History
+        </a>
+    </li>
+
+    <li class="{% if active_page == 'ai_picks' %}active{% endif %}">
+        <a href="{{ url_for('ai_picks') }}">
+            <i class="bi bi-stars"></i>
+            AI Picks
+        </a>
+    </li>
+
+</ul>

@@ -1,0 +1,725 @@
+{% extends "base.html" %}
+
+{% block title %}
+AI Insights
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ============================================================
+   AI INSIGHTS PAGE
+============================================================ */
+
+.ai-insight-card {
+    margin-top: 25px;
+}
+
+.ai-insight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.ai-insight-header h2 {
+    margin-bottom: 8px;
+}
+
+.ai-insight-header p {
+    margin: 0;
+}
+
+
+/* ============================================================
+   AI SUMMARY CARDS
+============================================================ */
+
+.ai-summary-card {
+    min-height: 150px;
+}
+
+.ai-summary-card i {
+    font-size: 30px;
+}
+
+
+/* ============================================================
+   MOVIE / MOOD VALUE
+============================================================ */
+
+.ai-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.ai-value-small {
+    font-size: 15px;
+    color: #b9acd4;
+}
+
+
+/* ============================================================
+   AI EXPLANATION
+============================================================ */
+
+.ai-explanation {
+    line-height: 1.7;
+    color: #c9bddc;
+    font-size: 15px;
+}
+
+
+/* ============================================================
+   ACTIVE USERS TABLE
+============================================================ */
+
+.ai-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.ai-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ai-table thead {
+    background: rgba(168, 85, 247, 0.10);
+}
+
+.ai-table th {
+    padding: 16px 20px;
+    text-align: left;
+    color: #c084fc;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-table td {
+    padding: 16px 20px;
+    color: #eee7ff;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ai-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.ai-table tbody tr:hover {
+    background: rgba(168, 85, 247, 0.07);
+}
+
+.ai-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ai-rank {
+    width: 60px;
+    color: #a78bfa !important;
+    font-weight: 700;
+}
+
+.ai-user-name {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.ai-user-email {
+    color: #aaa0bd !important;
+}
+
+.ai-activity-count {
+    font-weight: 700;
+    color: #d8b4fe !important;
+}
+
+
+/* ============================================================
+   AI SIGNAL CARDS
+============================================================ */
+
+.ai-signal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.ai-signal-card {
+    padding: 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ai-signal-card h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.ai-signal-card p {
+    margin: 0;
+    line-height: 1.7;
+    color: #bdb2cf;
+}
+
+.ai-signal-icon {
+    font-size: 26px;
+    margin-bottom: 12px;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .ai-signal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-insight-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ai-table th,
+    .ai-table td {
+        padding: 14px 12px;
+    }
+
+}
+
+</style>
+
+
+<div class="app-layout">
+
+
+    <!-- ======================================================
+         SIDEBAR
+    ======================================================= -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+
+    <!-- ======================================================
+         MAIN CONTENT
+    ======================================================= -->
+
+    <main class="main-content">
+
+
+        <!-- ==================================================
+             HEADER
+        =================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    ✨ AI Insights
+                </h1>
+
+                <p>
+                    Intelligent insights based on user behaviour,
+                    movie preferences and engagement patterns.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             AI OVERVIEW
+        =================================================== -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- MOST WATCHED MOVIE -->
+
+            <div class="dashboard-card ai-summary-card">
+
+                <i class="bi bi-film"></i>
+
+                <div>
+
+                    {% if most_watched_movie %}
+
+                    <h3 class="ai-value">
+                        {{ most_watched_movie["title"] }}
+                    </h3>
+
+                    <p>
+                        Most Watched Movie
+                    </p>
+
+                    <span class="ai-value-small">
+                        {{ most_watched_movie["count"] }} watches
+                    </span>
+
+                    {% else %}
+
+                    <h3>
+                        N/A
+                    </h3>
+
+                    <p>
+                        Most Watched Movie
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MOST WATCHLISTED MOVIE -->
+
+            <div class="dashboard-card ai-summary-card">
+
+                <i class="bi bi-heart"></i>
+
+                <div>
+
+                    {% if most_watchlisted_movie %}
+
+                    <h3 class="ai-value">
+                        {{ most_watchlisted_movie["title"] }}
+                    </h3>
+
+                    <p>
+                        Most Watchlisted Movie
+                    </p>
+
+                    <span class="ai-value-small">
+                        {{ most_watchlisted_movie["count"] }} saves
+                    </span>
+
+                    {% else %}
+
+                    <h3>
+                        N/A
+                    </h3>
+
+                    <p>
+                        Most Watchlisted Movie
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MOST SELECTED MOOD -->
+
+            <div class="dashboard-card ai-summary-card">
+
+                <i class="bi bi-stars"></i>
+
+                <div>
+
+                    {% if most_selected_mood %}
+
+                    <h3 class="ai-value">
+
+                        {% if most_selected_mood["mood"] == "cozy" %}
+                            Cozy
+                        {% elif most_selected_mood["mood"] == "emotional" %}
+                            Emotional
+                        {% elif most_selected_mood["mood"] == "adrenaline" %}
+                            Adrenaline
+                        {% elif most_selected_mood["mood"] == "mystery" %}
+                            Mystery
+                        {% elif most_selected_mood["mood"] == "horror" %}
+                            Horror
+                        {% elif most_selected_mood["mood"] == "fantasy" %}
+                            Fantasy
+                        {% elif most_selected_mood["mood"] == "romance" %}
+                            Romance
+                        {% elif most_selected_mood["mood"] == "mind" %}
+                            Mind
+                        {% elif most_selected_mood["mood"] == "funny" %}
+                            Funny
+                        {% elif most_selected_mood["mood"] == "explore" %}
+                            Explore
+                        {% else %}
+                            {{ most_selected_mood["mood"]|capitalize }}
+                        {% endif %}
+
+                    </h3>
+
+                    <p>
+                        Most Selected Mood
+                    </p>
+
+                    <span class="ai-value-small">
+                        {{ most_selected_mood["count"] }} selections
+                    </span>
+
+                    {% else %}
+
+                    <h3>
+                        N/A
+                    </h3>
+
+                    <p>
+                        Most Selected Mood
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TOTAL MOOD SELECTIONS -->
+
+            <div class="dashboard-card ai-summary-card">
+
+                <i class="bi bi-bar-chart"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_mood_selections }}
+                    </h3>
+
+                    <p>
+                        Mood Selections Analysed
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             AI RECOMMENDATION INSIGHT
+        =================================================== -->
+
+        <div class="admin-analytics-card ai-insight-card">
+
+            <div>
+
+                <h2>
+                    🤖 AI Recommendation Insight
+                </h2>
+
+                <p class="ai-explanation">
+
+                    Lumora can analyse viewing behaviour,
+                    watchlist activity and mood selections
+                    to identify user preferences and generate
+                    personalised movie recommendations.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             USER BEHAVIOUR
+        =================================================== -->
+
+        <div class="admin-analytics-card ai-insight-card">
+
+
+            <div class="ai-insight-header">
+
+                <div>
+
+                    <h2>
+                        👥 Most Engaged Users
+                    </h2>
+
+                    <p>
+                        Users with the highest combined activity
+                        across Lumora's recommendation signals.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            {% if active_users %}
+
+
+            <div class="ai-table-wrapper">
+
+                <table class="ai-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Combined Activity
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        {% for user in active_users %}
+
+
+                        <tr>
+
+
+                            <td class="ai-rank">
+
+                                {{ loop.index }}
+
+                            </td>
+
+
+                            <td class="ai-user-name">
+
+                                {{ user["name"] }}
+
+                            </td>
+
+
+                            <td class="ai-user-email">
+
+                                {{ user["email"] }}
+
+                            </td>
+
+
+                            <td class="ai-activity-count">
+
+                                🎬 {{ user["activity_count"] }}
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+
+            {% else %}
+
+
+            <p class="ai-explanation">
+
+                No user activity is available yet.
+
+            </p>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             AI SIGNALS
+        =================================================== -->
+
+        <div class="ai-signal-grid">
+
+
+            <!-- WATCHING SIGNAL -->
+
+            <div class="ai-signal-card">
+
+                <div class="ai-signal-icon">
+                    🎬
+                </div>
+
+                <h3>
+                    Viewing Behaviour
+                </h3>
+
+                <p>
+
+                    Watch history helps Lumora understand
+                    which movies users actually watch and
+                    identify frequently viewed content.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- WATCHLIST SIGNAL -->
+
+            <div class="ai-signal-card">
+
+                <div class="ai-signal-icon">
+                    ❤️
+                </div>
+
+                <h3>
+                    Watchlist Behaviour
+                </h3>
+
+                <p>
+
+                    Watchlist activity provides an additional
+                    signal about movies users are interested
+                    in watching later.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- MOOD SIGNAL -->
+
+            <div class="ai-signal-card">
+
+                <div class="ai-signal-icon">
+                    🎭
+                </div>
+
+                <h3>
+                    Mood Preferences
+                </h3>
+
+                <p>
+
+                    Mood selections help Lumora understand
+                    the type of movie experience users are
+                    looking for at different times.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- PERSONALISATION SIGNAL -->
+
+            <div class="ai-signal-card">
+
+                <div class="ai-signal-icon">
+                    🎯
+                </div>
+
+                <h3>
+                    Personalised Recommendations
+                </h3>
+
+                <p>
+
+                    Combining viewing history, watchlists
+                    and mood preferences can help create
+                    more personalised movie recommendations.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             DATA-DRIVEN AI
+        =================================================== -->
+
+        <div class="admin-analytics-card ai-insight-card">
+
+            <div>
+
+                <h2>
+                    🧠 AI Data Interpretation
+                </h2>
+
+                <p class="ai-explanation">
+
+                    Lumora's recommendation system can use
+                    multiple behavioural signals instead of
+                    relying on a single activity. Combining
+                    movie viewing, watchlist choices and mood
+                    preferences provides a broader picture of
+                    user interests.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+{% endblock %}

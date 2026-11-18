@@ -1,0 +1,1466 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ movie.title }}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/movie.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="movie-page">
+
+    <section class="movie-hero">
+
+        <img
+            class="hero-backdrop"
+            src="{{ movie.backdrop_url }}"
+            alt="{{ movie.title }}"
+        >
+
+        <div class="hero-overlay"></div>
+
+
+        <!-- =========================================================
+             BACK BUTTON
+        ========================================================== -->
+
+        <div class="movie-back-wrapper">
+
+            <button
+                type="button"
+                class="movie-back-btn"
+                onclick="goBackToPreviousPage()"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+
+        <!-- =========================================================
+             HERO CONTENT
+             POSTER LEFT + MOVIE DETAILS RIGHT
+        ========================================================== -->
+
+        <div class="hero-content">
+
+
+            <!-- =========================
+                 POSTER
+            ========================== -->
+
+            <div class="poster-section">
+
+                <img
+                    src="{{ movie.poster_url }}"
+                    alt="{{ movie.title }}"
+                    class="movie-poster"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 MOVIE DETAILS
+            ========================== -->
+
+            <div class="movie-details-info">
+
+                <h1>{{ movie.title }}</h1>
+
+
+                <!-- =========================
+                     MOVIE META
+                ========================== -->
+
+                <div class="movie-meta">
+
+                    {% if movie.get("vote_average") is not none %}
+
+                    <span class="rating">
+
+                        <span class="imdb-badge">
+                            IMDb
+                        </span>
+
+                        ⭐ {{ "%.1f"|format(movie.get("vote_average")) }}/10
+
+                    </span>
+
+                    {% endif %}
+
+                    <span>
+                        📅 {{ movie.get("release_date","Unknown") }}
+                    </span>
+
+                </div>
+
+
+                <!-- =========================
+                     GENRES
+                ========================== -->
+
+                <div class="genre-tags">
+
+                    {% if movie.get("genres") %}
+
+                        {% for genre in movie.genres %}
+
+                            <span class="genre-chip">
+                                {{ genre.name }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =========================
+                     OVERVIEW
+                ========================== -->
+
+                <p class="movie-overview">
+
+                    {{ movie.overview if movie.overview
+                    else "No overview available." }}
+
+                </p>
+
+
+                <!-- =========================
+                     INFORMATION
+                ========================== -->
+
+                <div class="movie-extra-info">
+
+                    <div class="info-box">
+
+                        <strong>⭐ Rating</strong>
+
+                        <span>
+                            {{ "%.1f"|format(movie.get("vote_average",0)) }}/10
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>🎬 Release Type</strong>
+
+                        <span>
+                            {{ movie.release_type }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>📅 Release Date</strong>
+
+                        <span>
+                            {{ movie.release_date }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>⏱ Runtime</strong>
+
+                        <span>
+
+                            {% if movie.runtime %}
+
+                                {{ movie.runtime }} min
+
+                            {% else %}
+
+                                Unknown
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>🌐 Language</strong>
+
+                        <span>
+                            {{ movie.language_name }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>🏆 Status</strong>
+
+                        <span>
+                            {{ movie.status }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     OTT
+                ========================== -->
+
+                <div class="ott-section">
+
+                    <h3>📺 Available On</h3>
+
+                    {% if movie.ott_platforms %}
+
+                        <div class="ott-logos">
+
+                            {% for ott in movie.ott_platforms %}
+
+                                <div class="ott-card">
+
+                                    <img
+                                        src="{{ ott.logo }}"
+                                        alt="{{ ott.name }}"
+                                    >
+
+                                    <span>
+                                        {{ ott.name }}
+                                    </span>
+
+                                    <small>
+                                        {{ ott.types | join(" • ") }}
+                                    </small>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="no-ott">
+                            Currently not available for streaming.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =========================
+                     BUTTONS
+                ========================== -->
+
+                <div class="movie-buttons">
+
+
+                    <!-- =========================
+                         TRAILER
+                    ========================== -->
+
+                    {% if movie.trailer_key %}
+
+                        <button
+                            class="play-btn"
+                            id="playTrailerBtn"
+                            data-trailer="{{ movie.trailer_key }}"
+                        >
+                            ▶ Play Trailer
+                        </button>
+
+                    {% else %}
+
+                        <button
+                            class="play-btn trailer-disabled"
+                            disabled
+                            data-tooltip="Trailer not available"
+                        >
+                            🚫 Trailer Not Available
+                        </button>
+
+                    {% endif %}
+
+
+                    <!-- =========================
+                         WATCHLIST
+                    ========================== -->
+
+                    <form
+                        action="{{ url_for('add_to_watchlist', movie_id=request.view_args.get('movie_id')) }}"
+                        method="POST"
+                        class="watchlist-form"
+                        id="watchlist-form"
+                    >
+
+                        <button
+                            type="submit"
+                            class="watchlist-btn {% if is_watchlisted %}watchlisted{% endif %}"
+                            id="watchlist-btn"
+                            {% if is_watchlisted %}disabled{% endif %}
+                        >
+
+                            {% if is_watchlisted %}
+
+                                ❤️ Watchlisted
+
+                            {% else %}
+
+                                ❤️ Watchlist
+
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- =========================
+                         WATCH HISTORY
+                    ========================== -->
+
+                    <form
+                        action="{{ url_for('add_to_history', movie_id=request.view_args.get('movie_id')) }}"
+                        method="POST"
+                        class="watched-form"
+                        id="watched-form"
+                    >
+
+                        <button
+                            type="submit"
+                            class="watched-btn {% if is_watched %}watched{% endif %}"
+                            id="watched-btn"
+                            {% if is_watched %}disabled{% endif %}
+                        >
+
+                            {% if is_watched %}
+
+                                ✓ Watched
+
+                            {% else %}
+
+                                ✓ Mark as Watched
+
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- =========================
+                     ACTION MESSAGE
+                ========================== -->
+
+                <div
+                    id="movieActionMessage"
+                    class="movie-action-message"
+                ></div>
+
+
+                <!-- =========================
+                     TOP CAST
+                ========================== -->
+
+                <div class="cast-section">
+
+                    <h3>🎭 Top Cast</h3>
+
+                    <div class="cast-grid">
+
+                        {% for actor in movie.cast %}
+
+                            <div class="cast-card">
+
+                                <img
+                                    src="{{ actor.profile }}"
+                                    alt="{{ actor.name }}"
+                                >
+
+                                <h4>
+                                    {{ actor.name }}
+                                </h4>
+
+                                <p>
+                                    {{ actor.character }}
+                                </p>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         MORE LIKE THIS
+    ========================== -->
+
+    {% if similar_movies %}
+
+    <section class="similar-section">
+
+        <h3>🎬 More Like This</h3>
+
+        <div class="similar-grid">
+
+            {% for similar in similar_movies %}
+
+                {% if similar.poster_url %}
+
+                <a
+                    href="{{ url_for('movie_details', movie_id=similar.id) }}"
+                    class="movie-link"
+                >
+
+                    <div class="similar-card">
+
+                        <img
+                            src="{{ similar.poster_url }}"
+                            alt="{{ similar.title }}"
+                        >
+
+                        <h4>
+                            {{ similar.title }}
+                        </h4>
+
+                        <p>
+                            ⭐ {{ "%.1f"|format(similar.rating|default(0)) }}
+                        </p>
+
+                    </div>
+
+                </a>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =====================================
+     TRAILER POPUP
+====================================== -->
+
+<div
+    class="trailer-modal"
+    id="trailerModal"
+>
+
+    <div class="trailer-content">
+
+        <button
+            class="close-trailer"
+            id="closeTrailer"
+        >
+            ✕
+        </button>
+
+        <iframe
+            id="trailerFrame"
+            src=""
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     BACK BUTTON JAVASCRIPT
+====================================== -->
+
+<script>
+
+function goBackToPreviousPage() {
+
+    /*
+     * Only use history.back() when the previous page
+     * belongs to this same website.
+     */
+
+    if (
+        document.referrer &&
+        new URL(document.referrer).origin === window.location.origin
+    ) {
+
+        window.history.back();
+
+    } else {
+
+        window.location.href = "{{ url_for('movies') }}";
+
+    }
+
+}
+
+</script>
+
+
+<!-- =====================================
+     JAVASCRIPT
+====================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const watchlistForm =
+        document.getElementById("watchlist-form");
+
+    const watchedForm =
+        document.getElementById("watched-form");
+
+    const watchlistBtn =
+        document.getElementById("watchlist-btn");
+
+    const watchedBtn =
+        document.getElementById("watched-btn");
+
+    const messageBox =
+        document.getElementById("movieActionMessage");
+
+
+    /* =====================================================
+       TRAILER ELEMENTS
+    ===================================================== */
+
+    const trailerModal =
+        document.getElementById("trailerModal");
+
+    const trailerFrame =
+        document.getElementById("trailerFrame");
+
+    const playTrailerBtn =
+        document.getElementById("playTrailerBtn");
+
+    const closeTrailer =
+        document.getElementById("closeTrailer");
+
+
+    /* =====================================================
+       TRAILER TRACKING VARIABLES
+    ===================================================== */
+
+   let trailerPlayer = null;
+
+let trailerStarted = false;
+
+let trailerFinished = false;
+
+let trailerActivityRecorded = false;
+
+let trailerTrackingInterval = null;
+
+let trailerDuration = 0;
+
+let highestWatchPercentage = 0;
+
+
+    /* =====================================================
+       SHOW MESSAGE
+    ===================================================== */
+
+    function showMovieMessage(
+        message,
+        type = "success",
+        linkText = null,
+        linkUrl = null
+    ) {
+
+        if (!messageBox) {
+            return;
+        }
+
+        messageBox.innerHTML = `
+            <span>${message}</span>
+
+            ${
+                linkText && linkUrl
+                ? `<a href="${linkUrl}" class="action-message-link">
+                        ${linkText} →
+                   </a>`
+                : ""
+            }
+        `;
+
+        messageBox.className =
+            "movie-action-message show " + type;
+
+        setTimeout(function () {
+
+            messageBox.classList.remove("show");
+
+        }, 5000);
+
+    }
+
+
+    /* =====================================================
+       LOAD YOUTUBE IFRAME API
+    ===================================================== */
+
+    function loadYouTubeAPI() {
+
+        if (window.YT && window.YT.Player) {
+
+            initializeTrailerPlayer();
+
+            return;
+        }
+
+        const script =
+            document.createElement("script");
+
+        script.src =
+            "https://www.youtube.com/iframe_api";
+
+        document.head.appendChild(script);
+
+    }
+
+
+    /* =====================================================
+       YOUTUBE API READY
+    ===================================================== */
+
+    window.onYouTubeIframeAPIReady = function () {
+
+        initializeTrailerPlayer();
+
+    };
+
+
+    /* =====================================================
+       INITIALIZE TRAILER PLAYER
+    ===================================================== */
+
+    function initializeTrailerPlayer() {
+
+        if (!trailerFrame) {
+            return;
+        }
+
+        if (trailerPlayer) {
+            return;
+        }
+
+        trailerPlayer =
+            new YT.Player(
+                "trailerFrame",
+                {
+
+                    events: {
+
+                        "onReady":
+                            onTrailerReady,
+
+                        "onStateChange":
+                            onTrailerStateChange
+
+                    }
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       TRAILER READY
+    ===================================================== */
+
+    function onTrailerReady(event) {
+
+        trailerPlayer =
+            event.target;
+
+    }
+
+
+    /* =====================================================
+       TRAILER STATE CHANGE
+    ===================================================== */
+
+    function onTrailerStateChange(event) {
+
+
+        if (
+            event.data ===
+            YT.PlayerState.PLAYING
+        ) {
+
+            trailerStarted = true;
+
+            startTrailerTracking();
+
+        }
+
+
+        else if (
+            event.data ===
+            YT.PlayerState.PAUSED
+        ) {
+
+            stopTrailerTracking();
+
+            recordTrailerProgress();
+
+        }
+
+
+        else if (
+            event.data ===
+            YT.PlayerState.ENDED
+        ) {
+
+            trailerFinished = true;
+
+            highestWatchPercentage = 100;
+
+            stopTrailerTracking();
+
+            recordTrailerProgress(true);
+
+        }
+
+    }
+
+
+    /* =====================================================
+       START TRACKING
+    ===================================================== */
+
+    function startTrailerTracking() {
+
+        if (trailerTrackingInterval) {
+            return;
+        }
+
+        trailerTrackingInterval =
+            setInterval(
+                function () {
+
+                    updateTrailerProgress();
+
+                },
+                5000
+            );
+
+    }
+
+
+    /* =====================================================
+       STOP TRACKING
+    ===================================================== */
+
+    function stopTrailerTracking() {
+
+        if (trailerTrackingInterval) {
+
+            clearInterval(
+                trailerTrackingInterval
+            );
+
+            trailerTrackingInterval =
+                null;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       UPDATE TRAILER PROGRESS
+    ===================================================== */
+
+    function updateTrailerProgress() {
+
+        if (!trailerPlayer) {
+            return;
+        }
+
+        try {
+
+            trailerDuration =
+                trailerPlayer.getDuration();
+
+            const currentTime =
+                trailerPlayer.getCurrentTime();
+
+
+            if (
+                !trailerDuration ||
+                trailerDuration <= 0
+            ) {
+
+                return;
+
+            }
+
+
+            const percentage =
+                (
+                    currentTime /
+                    trailerDuration
+                ) * 100;
+
+
+            if (
+                percentage >
+                highestWatchPercentage
+            ) {
+
+                highestWatchPercentage =
+                    Math.min(
+                        percentage,
+                        100
+                    );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Trailer tracking error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RECORD TRAILER PROGRESS
+    ===================================================== */
+
+    function recordTrailerProgress(forceComplete = false) {
+
+    if (!trailerStarted) {
+        return;
+    }
+
+    // Prevent duplicate database entries
+    if (trailerActivityRecorded) {
+        console.log("Trailer activity already recorded for this session.");
+        return;
+    }
+
+    updateTrailerProgress();
+
+    let percentage = highestWatchPercentage;
+
+    if (forceComplete || trailerFinished) {
+        percentage = 100;
+    }
+
+    if (percentage < 85) {
+        console.log(
+            "Trailer watched:",
+            percentage.toFixed(1) + "%",
+            "- Not enough interest data."
+        );
+        return;
+    }
+
+    let interestLevel;
+
+    if (percentage >= 100) {
+        interestLevel = "Highly Interested";
+    } else {
+        interestLevel = "Interested";
+    }
+
+    console.log(
+        "Trailer Interest:",
+        interestLevel,
+        percentage.toFixed(1) + "%"
+    );
+
+    // Mark as recorded BEFORE sending the request.
+    // This prevents two requests from being created
+    // if pause/close/end happen very close together.
+    trailerActivityRecorded = true;
+
+    fetch(
+        "/trailer-activity",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                movie_id:
+                    Number(
+                        window.location.pathname
+                            .split("/")
+                            .filter(Boolean)
+                            .pop()
+                    ),
+
+                watch_percentage:
+                    Number(
+                        percentage.toFixed(2)
+                    ),
+
+                interest_level:
+                    interestLevel,
+
+                completed:
+                    percentage >= 100 ? 1 : 0
+            })
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        console.log(
+            "Trailer activity response:",
+            data
+        );
+
+    })
+    .catch(error => {
+
+        console.error(
+            "Trailer activity error:",
+            error
+        );
+
+    });
+}
+
+
+    /* =====================================================
+       PLAY TRAILER
+    ===================================================== */
+
+    if (playTrailerBtn) {
+
+        playTrailerBtn.addEventListener(
+            "click",
+            function () {
+
+                const trailerKey =
+                    playTrailerBtn.dataset.trailer;
+
+
+                if (!trailerKey) {
+
+                    showMovieMessage(
+                        "Trailer is not available.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+               trailerStarted = false;
+trailerFinished = false;
+trailerActivityRecorded = false;
+highestWatchPercentage = 0;
+trailerDuration = 0;
+
+
+                if (trailerModal) {
+
+                    trailerModal.classList.add(
+                        "show"
+                    );
+
+                }
+
+
+                trailerFrame.src =
+                    "https://www.youtube.com/embed/" +
+                    trailerKey +
+                    "?enablejsapi=1" +
+                    "&autoplay=1";
+
+
+                loadYouTubeAPI();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE TRAILER
+    ===================================================== */
+
+    if (closeTrailer) {
+
+        closeTrailer.addEventListener(
+            "click",
+            function () {
+
+
+                if (trailerStarted) {
+
+                    recordTrailerProgress();
+
+                }
+
+
+                stopTrailerTracking();
+
+
+                if (trailerPlayer) {
+
+                    try {
+
+                        trailerPlayer.destroy();
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Player destroy error:",
+                            error
+                        );
+
+                    }
+
+                    trailerPlayer = null;
+
+                }
+
+
+                if (trailerFrame) {
+
+                    trailerFrame.src = "";
+
+                }
+
+
+                if (trailerModal) {
+
+                    trailerModal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE TRAILER WHEN CLICKING OUTSIDE
+    ===================================================== */
+
+    if (trailerModal) {
+
+        trailerModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    trailerModal
+                ) {
+
+                    if (trailerStarted) {
+
+                        recordTrailerProgress();
+
+                    }
+
+                    stopTrailerTracking();
+
+
+                    if (trailerPlayer) {
+
+                        try {
+
+                            trailerPlayer.destroy();
+
+                        }
+
+                        catch (error) {
+
+                            console.error(
+                                error
+                            );
+
+                        }
+
+                        trailerPlayer = null;
+
+                    }
+
+
+                    trailerFrame.src = "";
+
+                    trailerModal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       WATCHLIST
+    ===================================================== */
+
+    if (watchlistForm && watchlistBtn) {
+
+        watchlistForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                if (watchlistBtn.disabled) {
+                    return;
+                }
+
+                watchlistBtn.disabled = true;
+
+                try {
+
+                    const response =
+                        await fetch(
+                            watchlistForm.action,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest",
+                                    "Accept":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+
+                    if (data.success) {
+
+                        watchlistBtn.innerHTML =
+                            "❤️ Watchlisted";
+
+                        watchlistBtn.classList.add(
+                            "watchlisted"
+                        );
+
+                        watchlistBtn.disabled =
+                            true;
+
+
+                        showMovieMessage(
+                            "❤️ Added to your Watchlist!",
+                            "success",
+                            "View Watchlist",
+                            "{{ url_for('watchlist') }}"
+                        );
+
+                    }
+
+                    else {
+
+                        watchlistBtn.disabled =
+                            false;
+
+                        showMovieMessage(
+                            data.message ||
+                            "Could not add movie to Watchlist.",
+                            "error"
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Watchlist Error:",
+                        error
+                    );
+
+                    watchlistBtn.disabled =
+                        false;
+
+                    showMovieMessage(
+                        "Something went wrong.",
+                        "error"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       WATCH HISTORY
+    ===================================================== */
+
+    if (watchedForm && watchedBtn) {
+
+        watchedForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                if (watchedBtn.disabled) {
+                    return;
+                }
+
+                watchedBtn.disabled = true;
+
+                try {
+
+                    const response =
+                        await fetch(
+                            watchedForm.action,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest",
+                                    "Accept":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+
+                    if (data.success) {
+
+                        watchedBtn.innerHTML =
+                            "✓ Watched";
+
+                        watchedBtn.classList.add(
+                            "watched"
+                        );
+
+                        watchedBtn.disabled =
+                            true;
+
+
+                        showMovieMessage(
+                            "✓ Added to your Watch History!",
+                            "success",
+                            "View History",
+                            "{{ url_for('history') }}"
+                        );
+
+                    }
+
+                    else {
+
+                        watchedBtn.disabled =
+                            false;
+
+                        showMovieMessage(
+                            data.message ||
+                            "Could not add movie to Watch History.",
+                            "error"
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "History Error:",
+                        error
+                    );
+
+                    watchedBtn.disabled =
+                        false;
+
+                    showMovieMessage(
+                        "Something went wrong.",
+                        "error"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+});
+
+</script>
+
+
+<!-- =====================================
+     BACK BUTTON STYLE
+====================================== -->
+
+<style>
+
+.movie-back-wrapper {
+
+    width: 100%;
+
+    position: relative;
+
+    z-index: 10;
+
+    padding: 20px 0 10px 0;
+
+    box-sizing: border-box;
+
+}
+
+.movie-back-btn {
+
+    background: transparent;
+
+    border: none;
+
+    color: #b9a4d8;
+
+    font-size: 17px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    padding: 8px 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+.movie-back-btn:hover {
+
+    color: #f05bb5;
+
+    transform: translateX(-4px);
+
+}
+
+
+/*
+ * IMPORTANT:
+ * The back button is now OUTSIDE .hero-content.
+ *
+ * Therefore it cannot become a third grid/flex item
+ * and push the movie details underneath the poster.
+ */
+
+.movie-hero .hero-content {
+
+    position: relative;
+
+}
+
+
+/*
+ * Keep poster and movie details side-by-side.
+ */
+
+.movie-hero .poster-section {
+
+    min-width: 0;
+
+}
+
+.movie-hero .movie-details-info {
+
+    min-width: 0;
+
+}
+
+
+/*
+ * Responsive layout
+ */
+
+@media (max-width: 900px) {
+
+    .movie-back-wrapper {
+
+        padding-top: 15px;
+
+    }
+
+}
+
+</style>
+
+
+{% endblock %}

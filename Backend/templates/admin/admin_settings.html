@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Settings
+{% endblock %}
+
+
+{% block content %}
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    ⚙️ Settings
+                </h1>
+
+                <p>
+                    Manage your Lumora administration preferences.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADMIN PROFILE -->
+
+        <div class="admin-analytics-card">
+
+            <h2>
+                👤 Admin Profile
+            </h2>
+
+            <p>
+                Admin Name:
+                {{ session.get("admin_name", "Admin") }}
+            </p>
+
+            <p>
+                Email:
+                {{ session.get("admin_email", "Not Available") }}
+            </p>
+
+        </div>
+
+
+
+
+        <!-- AI SETTINGS -->
+
+        <div class="admin-analytics-card">
+
+            <h2>
+                🧠 AI Recommendation System
+            </h2>
+
+            <p>
+                Lumora recommendations can use user activity,
+                watchlists, watch history and movie preferences
+                to provide personalised movie suggestions.
+            </p>
+
+        </div>
+
+
+        <!-- SYSTEM INFORMATION -->
+
+        <div class="admin-analytics-card">
+
+            <h2>
+                🗄️ System Information
+            </h2>
+
+            <p>
+                Application: Lumora Movie Recommendation System
+            </p>
+
+            <p>
+                Database: Connected
+            </p>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

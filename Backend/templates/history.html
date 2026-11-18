@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}
+Watch History
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+        {% include "sidebar.html" %}
+    </aside>
+
+    <main class="dashboard-content history-page">
+
+        <div class="history-header">
+
+            <div>
+                <h1>Watch History</h1>
+
+                <p>
+                    Movies you've watched will appear here.
+                </p>
+            </div>
+
+            <span class="history-count">
+                {{ history_movies|length }} movies
+            </span>
+
+        </div>
+
+
+        {% if history_movies %}
+
+        <div class="history-grid">
+
+            {% for movie in history_movies %}
+
+            <div class="history-card">
+
+                <a
+                    href="{{ url_for('movie_details', movie_id=movie.id) }}"
+                    class="history-poster-link"
+                >
+
+                    {% if movie.poster_url %}
+
+                    <img
+                        src="{{ movie.poster_url }}"
+                        alt="{{ movie.title }}"
+                        class="history-poster"
+                    >
+
+                    {% else %}
+
+                    <div class="history-no-poster">
+                        No Poster
+                    </div>
+
+                    {% endif %}
+
+                </a>
+
+
+                <div class="history-info">
+
+                    <a
+                        href="{{ url_for('movie_details', movie_id=movie.id) }}"
+                        class="history-title"
+                    >
+                        {{ movie.title }}
+                    </a>
+
+
+                    <div class="history-rating">
+
+                        ⭐
+
+                        {{ "%.1f"|format(
+                            movie.get("vote_average", 0)
+                        ) }}/10
+
+                    </div>
+
+
+                    <div class="history-release">
+
+                        📅
+
+                        {{ movie.get(
+                            "release_date",
+                            "Unknown"
+                        ) }}
+
+                    </div>
+
+
+                    <div class="history-watched">
+
+                        ✓ Watched
+
+                        {% if movie.watched_at %}
+
+                        <span>
+                            • {{ movie.watched_at }}
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <form
+                        action="{{ url_for(
+                            'remove_from_history',
+                            movie_id=movie.id
+                        ) }}"
+                        method="POST"
+                        class="remove-history-form"
+                    >
+
+                        <button
+                            type="submit"
+                            class="remove-history-btn"
+                        >
+                            🗑 Remove from History
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-history">
+
+            <div class="empty-history-icon">
+                🎬
+            </div>
+
+            <h2>Your Watch History is Empty</h2>
+
+            <p>
+                Movies you mark as watched will appear here.
+            </p>
+
+            <a
+                href="{{ url_for('movies') }}"
+                class="browse-movies-btn"
+            >
+                Browse Movies
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const removeForms = document.querySelectorAll(
+        ".remove-history-form"
+    );
+
+    removeForms.forEach(function (form) {
+
+        form.addEventListener("submit", async function (event) {
+
+            // IMPORTANT:
+            // Stop normal form submission
+            event.preventDefault();
+
+            const card = form.closest(".history-card");
+            const button = form.querySelector(
+                ".remove-history-btn"
+            );
+
+            // Prevent double click
+            button.disabled = true;
+            button.textContent = "Removing...";
+
+            try {
+
+                const response = await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+
+                    // Fade out the movie card
+                    if (card) {
+
+                        card.style.transition = "0.3s ease";
+                        card.style.opacity = "0";
+                        card.style.transform = "scale(0.95)";
+
+                        setTimeout(function () {
+
+                            card.remove();
+
+                            // Update movie count
+                            const remainingCards =
+                                document.querySelectorAll(
+                                    ".history-card"
+                                );
+
+                            const count =
+                                document.querySelector(
+                                    ".history-count"
+                                );
+
+                            if (count) {
+
+                                count.textContent =
+                                    remainingCards.length +
+                                    (
+                                        remainingCards.length === 1
+                                            ? " movie"
+                                            : " movies"
+                                    );
+
+                            }
+
+                            // If no movies remain,
+                            // reload to show empty-history section
+                            if (
+                                remainingCards.length === 0
+                            ) {
+
+                                location.reload();
+
+                            }
+
+                        }, 300);
+                    }
+
+                    showHistoryToast(
+                        "🗑️ Movie removed from Watch History."
+                    );
+
+                } else {
+
+                    button.disabled = false;
+                    button.textContent =
+                        "🗑 Remove from History";
+
+                    showHistoryToast(
+                        "Could not remove the movie."
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Remove History Error:",
+                    error
+                );
+
+                button.disabled = false;
+
+                button.textContent =
+                    "🗑 Remove from History";
+
+                showHistoryToast(
+                    "Something went wrong."
+                );
+
+            }
+
+        });
+
+    });
+
+
+    // ==========================================
+    // HISTORY TOAST
+    // ==========================================
+
+    function showHistoryToast(message) {
+
+        const oldToast =
+            document.querySelector(".history-toast");
+
+        if (oldToast) {
+            oldToast.remove();
+        }
+
+        const toast = document.createElement("div");
+
+        toast.className = "history-toast";
+
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(function () {
+
+            toast.style.opacity = "0";
+
+            setTimeout(function () {
+
+                toast.remove();
+
+            }, 500);
+
+        }, 3000);
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

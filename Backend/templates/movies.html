@@ -1,0 +1,1045 @@
+{% extends "base.html" %}
+
+{% block title %}
+Movies
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/movies.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        {% include "sidebar.html" %}
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <div class="dashboard-header">
+
+            <div class="search-container">
+
+                <form
+                    action="{{ url_for('movies') }}"
+                    method="GET"
+                    class="search-form"
+                >
+
+                    <div class="search-input-wrapper">
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ search }}"
+                            id="searchInput"
+                            placeholder="Search for movies..."
+                            class="dashboard-search"
+                            autocomplete="off"
+                        >
+
+                        <!-- CLEAR SEARCH BUTTON -->
+                        <button
+                            type="button"
+                            id="clearSearchBtn"
+                            class="clear-search-btn"
+                            aria-label="Clear search"
+                            title="Clear search"
+                        >
+                            ✕
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             GREETING
+        ====================================================== -->
+
+        {% if selected_genres %}
+
+        <h1>
+            {{ selected_genres | join(", ") }} Movies 🎬
+        </h1>
+
+        <p class="welcome-text">
+            Browse every selected genre available in Lumora.
+        </p>
+
+        {% else %}
+
+        <h1>
+            Hello,
+            {{ username if username else "Movie Lover" }} 👋
+        </h1>
+
+        <p class="welcome-text">
+            What are we watching today?
+        </p>
+
+        {% endif %}
+
+
+
+        <!-- =====================================================
+             GENRE FILTER
+        ====================================================== -->
+
+        <div class="genre-filter">
+
+            <form
+                id="filterForm"
+                method="GET"
+                action="{{ url_for('movies') }}"
+            >
+            </form>
+
+
+            <button
+                type="button"
+                class="genre-chip-btn
+                {% if not selected_genres %}active{% endif %}"
+                data-genre="all"
+            >
+                All
+            </button>
+
+
+            {% for id, genre in genres.items() %}
+
+            <button
+                type="button"
+                class="genre-chip-btn
+                {% if genre in selected_genres %}active{% endif %}"
+                data-genre="{{ genre }}"
+            >
+                {{ genre }}
+            </button>
+
+            {% endfor %}
+
+        </div>
+
+
+
+        <!-- =====================================================
+             BROWSE BY LANGUAGE
+        ====================================================== -->
+
+        <div class="language-section">
+
+            <h3 class="filter-title">
+                🌍 Browse by Language
+            </h3>
+
+
+            <div class="language-filter">
+
+                <button
+                    class="language-chip
+                    {% if 'bollywood' in selected_languages %}active{% endif %}"
+                    data-language="bollywood"
+                >
+                    🇮🇳 Bollywood
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'korean' in selected_languages %}active{% endif %}"
+                    data-language="korean"
+                >
+                    🇰🇷 Korean
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'anime' in selected_languages %}active{% endif %}"
+                    data-language="anime"
+                >
+                    🇯🇵 Anime
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'hollywood' in selected_languages %}active{% endif %}"
+                    data-language="hollywood"
+                >
+                    🇺🇸 Hollywood
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'chinese' in selected_languages %}active{% endif %}"
+                    data-language="chinese"
+                >
+                    🇨🇳 Chinese
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'spanish' in selected_languages %}active{% endif %}"
+                    data-language="spanish"
+                >
+                    🇪🇸 Spanish
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'french' in selected_languages %}active{% endif %}"
+                    data-language="french"
+                >
+                    🇫🇷 French
+                </button>
+
+
+                <button
+                    class="language-chip
+                    {% if 'thai' in selected_languages %}active{% endif %}"
+                    data-language="thai"
+                >
+                    🇹🇭 Thai
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             MOVIE RESULTS
+        ====================================================== -->
+
+        <section class="recommend-section">
+
+            <div class="section-title">
+
+                <h2>
+
+                    {% if search %}
+
+                        Search Results for "{{ search }}"
+
+                    {% elif selected_genres %}
+
+                        {{ selected_genres | join(", ") }} Collection
+
+                    {% elif selected_languages %}
+
+                        Movies in {{ selected_languages | join(", ") }}
+
+                    {% else %}
+
+                        <i class="bi bi-film"></i>
+                        Browse Movies
+
+                    {% endif %}
+
+                </h2>
+
+            </div>
+
+
+            <div
+                id="moviesContainer"
+                class="movies-grid"
+            >
+
+                {% include "movie_cards.html" %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             SEARCH + FILTER + INFINITE SCROLL JAVASCRIPT
+        ====================================================== -->
+
+        <script>
+
+        const filterForm =
+            document.getElementById("filterForm");
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const clearSearchBtn =
+            document.getElementById("clearSearchBtn");
+
+
+
+        /* =====================================================
+           CLEAR SEARCH BUTTON
+        ====================================================== */
+
+        function updateClearSearchButton() {
+
+            if (!searchInput || !clearSearchBtn) {
+                return;
+            }
+
+            if (searchInput.value.trim() !== "") {
+
+                clearSearchBtn.classList.add("show");
+
+            } else {
+
+                clearSearchBtn.classList.remove("show");
+
+            }
+
+        }
+
+
+        /*
+         * Show / hide the ✕ button whenever
+         * the search text changes.
+         */
+
+        searchInput.addEventListener(
+            "input",
+            updateClearSearchButton
+        );
+
+
+        /*
+         * Clear search button
+         */
+
+        clearSearchBtn.addEventListener(
+            "click",
+            function () {
+
+                searchInput.value = "";
+
+                updateClearSearchButton();
+
+                /*
+                 * Trigger the existing search/filter
+                 * system so the movie results refresh.
+                 *
+                 * This also keeps selected genres
+                 * and languages working.
+                 */
+
+                searchInput.dispatchEvent(
+                    new Event("input")
+                );
+
+                /*
+                 * Put cursor back inside search box.
+                 */
+
+                searchInput.focus();
+
+            }
+        );
+
+
+        /*
+         * Make sure the button is visible immediately
+         * if the page was loaded with a search query.
+         */
+
+        updateClearSearchButton();
+
+
+
+        /* =====================================================
+           RESTORE SCROLL POSITION
+        ====================================================== */
+
+        window.addEventListener("load", () => {
+
+            const saved =
+                sessionStorage.getItem("moviesScroll");
+
+            if (saved) {
+
+                window.scrollTo(
+                    0,
+                    parseInt(saved)
+                );
+
+                sessionStorage.removeItem(
+                    "moviesScroll"
+                );
+
+            }
+
+        });
+
+
+
+        /* =====================================================
+           SEARCH
+        ====================================================== */
+
+        let searchTimer;
+
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                /*
+                 * Update clear button immediately.
+                 */
+
+                updateClearSearchButton();
+
+
+                clearTimeout(searchTimer);
+
+
+                searchTimer = setTimeout(() => {
+
+                    filterForm.innerHTML = "";
+
+
+                    /* -------------------------
+                       SEARCH
+                    ------------------------- */
+
+                    const searchField =
+                        document.createElement("input");
+
+                    searchField.type =
+                        "hidden";
+
+                    searchField.name =
+                        "search";
+
+                    searchField.value =
+                        searchInput.value;
+
+                    filterForm.appendChild(
+                        searchField
+                    );
+
+
+                    /* -------------------------
+                       GENRES
+                    ------------------------- */
+
+                    document
+                        .querySelectorAll(
+                            ".genre-chip-btn.active"
+                        )
+                        .forEach(button => {
+
+                            if (
+                                button.dataset.genre ===
+                                "all"
+                            ) {
+                                return;
+                            }
+
+                            const input =
+                                document.createElement(
+                                    "input"
+                                );
+
+                            input.type =
+                                "hidden";
+
+                            input.name =
+                                "genres";
+
+                            input.value =
+                                button.dataset.genre;
+
+                            filterForm.appendChild(
+                                input
+                            );
+
+                        });
+
+
+                    /* -------------------------
+                       LANGUAGES
+                    ------------------------- */
+
+                    document
+                        .querySelectorAll(
+                            ".language-chip.active"
+                        )
+                        .forEach(button => {
+
+                            const input =
+                                document.createElement(
+                                    "input"
+                                );
+
+                            input.type =
+                                "hidden";
+
+                            input.name =
+                                "languages";
+
+                            input.value =
+                                button.dataset.language;
+
+                            filterForm.appendChild(
+                                input
+                            );
+
+                        });
+
+
+                    /*
+                     * Save scroll position.
+                     */
+
+                    const scrollPosition =
+                        window.scrollY;
+
+                    sessionStorage.setItem(
+                        "moviesScroll",
+                        scrollPosition
+                    );
+
+
+                    /*
+                     * Build filter parameters.
+                     */
+
+                    const params =
+                        new URLSearchParams(
+                            new FormData(filterForm)
+                        );
+
+
+                    /*
+                     * Fetch filtered movies.
+                     */
+
+                    fetch(
+                        "/movies/filter?" +
+                        params.toString()
+                    )
+
+                    .then(
+                        response =>
+                            response.text()
+                    )
+
+                    .then(
+                        html => {
+
+                            document
+                                .getElementById(
+                                    "moviesContainer"
+                                )
+                                .innerHTML =
+                                html;
+
+                        }
+                    );
+
+                }, 500);
+
+            }
+        );
+
+
+
+        /* =====================================================
+           GENRE BUTTONS
+        ====================================================== */
+
+        const genreButtons =
+            document.querySelectorAll(
+                ".genre-chip-btn"
+            );
+
+
+        genreButtons.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        this.dataset.genre ===
+                        "all"
+                    ) {
+
+                        genreButtons.forEach(
+                            btn => {
+
+                                btn.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        this.classList.add(
+                            "active"
+                        );
+
+                        /*
+                         * Refresh results.
+                         */
+
+                        clearTimeout(
+                            searchTimer
+                        );
+
+                        searchTimer =
+                            setTimeout(() => {
+
+                                searchInput.dispatchEvent(
+                                    new Event("input")
+                                );
+
+                            }, 150);
+
+                        return;
+                    }
+
+
+                    /*
+                     * Remove All selection.
+                     */
+
+                    document
+                        .querySelector(
+                            '[data-genre="all"]'
+                        )
+                        .classList.remove(
+                            "active"
+                        );
+
+
+                    /*
+                     * Toggle selected genre.
+                     */
+
+                    this.classList.toggle(
+                        "active"
+                    );
+
+
+                    clearTimeout(
+                        searchTimer
+                    );
+
+
+                    searchTimer =
+                        setTimeout(() => {
+
+                            searchInput.dispatchEvent(
+                                new Event("input")
+                            );
+
+                        }, 150);
+
+                }
+            );
+
+        });
+
+
+
+        /* =====================================================
+           LANGUAGE BUTTONS
+        ====================================================== */
+
+        const languageButtons =
+            document.querySelectorAll(
+                ".language-chip"
+            );
+
+
+        languageButtons.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    this.classList.toggle(
+                        "active"
+                    );
+
+
+                    clearTimeout(
+                        searchTimer
+                    );
+
+
+                    searchTimer =
+                        setTimeout(() => {
+
+                            searchInput.dispatchEvent(
+                                new Event("input")
+                            );
+
+                        }, 150);
+
+                }
+            );
+
+        });
+
+
+
+        /* =====================================================
+           INFINITE SCROLL
+        ====================================================== */
+
+        let currentPage = 6;
+
+        let loading = false;
+
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                if (loading) {
+                    return;
+                }
+
+
+                if (
+                    window.innerHeight +
+                    window.scrollY >=
+                    document.body.offsetHeight -
+                    600
+                ) {
+
+                    loadMoreMovies();
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           LOAD MORE MOVIES
+        ====================================================== */
+
+        function loadMoreMovies() {
+
+            loading = true;
+
+
+            const params =
+                new URLSearchParams();
+
+
+            /* -----------------------
+               SEARCH
+            ----------------------- */
+
+            if (
+                searchInput.value.trim() !== ""
+            ) {
+
+                params.append(
+                    "search",
+                    searchInput.value.trim()
+                );
+
+            }
+
+
+            /* -----------------------
+               GENRES
+            ----------------------- */
+
+            document
+                .querySelectorAll(
+                    ".genre-chip-btn.active"
+                )
+                .forEach(button => {
+
+                    if (
+                        button.dataset.genre !==
+                        "all"
+                    ) {
+
+                        params.append(
+                            "genres",
+                            button.dataset.genre
+                        );
+
+                    }
+
+                });
+
+
+            /* -----------------------
+               LANGUAGES
+            ----------------------- */
+
+            document
+                .querySelectorAll(
+                    ".language-chip.active"
+                )
+                .forEach(button => {
+
+                    params.append(
+                        "languages",
+                        button.dataset.language
+                    );
+
+                });
+
+
+            params.append(
+                "page",
+                currentPage
+            );
+
+
+            fetch(
+                "/movies/filter?" +
+                params.toString()
+            )
+
+            .then(
+                response =>
+                    response.text()
+            )
+
+            .then(
+                html => {
+
+                    document
+                        .getElementById(
+                            "moviesContainer"
+                        )
+                        .insertAdjacentHTML(
+                            "beforeend",
+                            html
+                        );
+
+
+                    currentPage += 5;
+
+                    loading = false;
+
+                }
+            )
+
+            .catch(() => {
+
+                loading = false;
+
+            });
+
+        }
+
+        </script>
+
+
+
+        <!-- =====================================================
+             SEARCH BAR CLEAR BUTTON CSS
+        ====================================================== -->
+
+        <style>
+
+        /*
+         * Wrapper around the search input.
+         */
+
+        .search-input-wrapper {
+
+            position: relative;
+
+            width: 100%;
+
+        }
+
+
+        /*
+         * Give the input space for the ✕ button.
+         */
+
+        .search-input-wrapper
+        .dashboard-search {
+
+            padding-right: 55px !important;
+
+        }
+
+
+        /*
+         * CLEAR BUTTON
+         */
+
+        .clear-search-btn {
+
+            position: absolute;
+
+            right: 12px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            width: 34px;
+
+            height: 34px;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+            color: #ffffff;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+            line-height: 1;
+
+            cursor: pointer;
+
+            z-index: 5;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+
+        }
+
+
+        /*
+         * Show the button when search has text.
+         */
+
+        .clear-search-btn.show {
+
+            display: flex;
+
+        }
+
+
+        /*
+         * Hover effect.
+         */
+
+        .clear-search-btn:hover {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #9b5cff,
+                    #f05bb5
+                );
+
+            transform:
+                translateY(-50%)
+                scale(1.08);
+
+            box-shadow:
+                0 4px 16px
+                rgba(
+                    240,
+                    91,
+                    181,
+                    0.35
+                );
+
+        }
+
+
+        /*
+         * Click effect.
+         */
+
+        .clear-search-btn:active {
+
+            transform:
+                translateY(-50%)
+                scale(0.94);
+
+        }
+
+
+        /*
+         * Mobile
+         */
+
+        @media (max-width: 768px) {
+
+            .clear-search-btn {
+
+                width: 30px;
+
+                height: 30px;
+
+                right: 9px;
+
+                font-size: 15px;
+
+            }
+
+            .search-input-wrapper
+            .dashboard-search {
+
+                padding-right:
+                    48px !important;
+
+            }
+
+        }
+
+        </style>
+
+
+    </main>
+
+</div>
+
+{% endblock %}

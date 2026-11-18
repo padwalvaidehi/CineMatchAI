@@ -1,0 +1,980 @@
+{% extends "base.html" %}
+
+{% block title %}
+Trailer Analytics
+{% endblock %}
+
+
+{% block content %}
+
+<div class="app-layout trailer-page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    🎬 Trailer Analytics
+                </h1>
+
+                <p>
+                    Analyze trailer engagement and viewing behaviour.
+                </p>
+
+            </div>
+
+        </div>
+
+
+       <!-- =========================================
+     TRAILER KPI CARDS
+========================================= -->
+
+<div class="trailer-kpi-grid">
+
+    <!-- TOTAL TRAILER ACTIVITIES -->
+
+    <div class="trailer-kpi-card">
+
+        <div class="kpi-icon">
+            <i class="bi bi-play-btn"></i>
+        </div>
+
+        <div class="kpi-content">
+
+            <h2>
+                {{ total_trailer_activity }}
+            </h2>
+
+            <p>
+                Total Trailer Activities
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- COMPLETED TRAILERS -->
+
+    <div class="trailer-kpi-card">
+
+        <div class="kpi-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+
+        <div class="kpi-content">
+
+            <h2>
+                {{ completed_trailers }}
+            </h2>
+
+            <p>
+                Completed Trailers
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- AVERAGE COMPLETION -->
+
+    <div class="trailer-kpi-card">
+
+        <div class="kpi-icon">
+            <i class="bi bi-bar-chart"></i>
+        </div>
+
+        <div class="kpi-content">
+
+            <h2>
+                {{ "%.2f"|format(average_completion) }}%
+            </h2>
+
+            <p>
+                Average Completion
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- =========================================
+             TRAILER INTEREST DISTRIBUTION
+        ========================================== -->
+
+        <div class="admin-analytics-card trailer-section-card">
+
+            <h2>
+                💜 Trailer Interest Distribution
+            </h2>
+
+            <p>
+                Number of trailer activities by user interest level.
+            </p>
+
+
+            <div class="trailer-table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Interest Level
+                            </th>
+
+                            <th>
+                                Total Activities
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in interest_levels %}
+
+                        <tr>
+
+                            <td>
+                                🎯 {{ item["interest_level"] }}
+                            </td>
+
+                            <td>
+                                {{ item["count"] }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="2">
+                                No trailer interest data available.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             MOST ACTIVE TRAILER USERS
+        ========================================== -->
+
+        <div class="admin-analytics-card trailer-section-card">
+
+            <h2>
+                👥 Most Active Trailer Users
+            </h2>
+
+            <p>
+                Users with the highest number of trailer activities.
+            </p>
+
+
+            <div class="trailer-table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>User</th>
+
+                            <th>Email</th>
+
+                            <th>Trailer Activities</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for user in active_users %}
+
+                        <tr>
+
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ user["name"] or "Unknown User" }}
+                            </td>
+
+                            <td>
+                                {{ user["email"] or "Not Available" }}
+                            </td>
+
+                            <td>
+                                ▶️ {{ user["activity_count"] }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="4">
+                                No trailer activity available.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+<!-- ==================================================
+     USER TRAILER ACTIVITY
+=================================================== -->
+
+<div class="admin-analytics-card trailer-section-card">
+
+    <h2>
+        🎬 User Trailer Activity
+    </h2>
+
+    <p>
+        Movies and trailers watched by users along with
+        their completion percentage and interest level.
+    </p>
+
+
+    <!-- FILTER + RESULT COUNT -->
+
+    <div class="trailer-filter-row">
+
+        <div class="trailer-filter-group">
+
+            <label for="interestFilter">
+                Filter by Interest
+            </label>
+
+            <select id="interestFilter">
+
+                <option value="all">
+                    All Interests
+                </option>
+
+                {% for item in interest_levels %}
+
+                <option value="{{ item['interest_level']|lower }}">
+                    {{ item["interest_level"] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="trailer-result-count">
+
+            🎬
+            <span id="trailerResultCount">
+                {{ trailer_activity_details|length }}
+            </span>
+
+            Results
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="trailer-table-wrapper">
+
+        <table class="admin-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Movie / Trailer
+                    </th>
+
+                    <th>
+                        Watch %
+                    </th>
+
+                    <th>
+                        Interest
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="trailerActivityTable">
+
+                {% for activity in trailer_activity_details %}
+
+                <tr
+                    class="trailer-activity-row"
+                    data-interest="{{ activity['interest_level']|lower }}"
+                >
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ activity["name"] or "Unknown User" }}
+                    </td>
+
+                    <td>
+                        {{ activity["email"] or "N/A" }}
+                    </td>
+
+                    <td>
+                        {{ activity["title"] or "Unknown Movie" }}
+                    </td>
+
+                    <td>
+                        🎬 {{ activity["watch_percentage"] or 0 }}%
+                    </td>
+
+                    <td>
+
+                        {% if activity["interest_level"] %}
+
+                            {% if activity["interest_level"]|lower == "high" %}
+
+                                🔥 {{ activity["interest_level"] }}
+
+                            {% elif activity["interest_level"]|lower == "medium" %}
+
+                                ⭐ {{ activity["interest_level"] }}
+
+                            {% else %}
+
+                                👀 {{ activity["interest_level"] }}
+
+                            {% endif %}
+
+                        {% else %}
+
+                            N/A
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="6">
+                        No trailer activity details available yet.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   TRAILER ANALYTICS
+   WATCH HISTORY THEME
+========================================================= */
+
+.trailer-page .main-content {
+    padding-bottom: 50px;
+}
+
+
+/* =========================================================
+   ALL TRAILER CARDS
+========================================================= */
+
+.trailer-page .admin-analytics-card {
+
+    background: #171526;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 16px;
+
+    padding: 26px;
+
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.20);
+
+}
+
+
+/* =========================================================
+   CARD HEADINGS
+========================================================= */
+
+.trailer-page .admin-analytics-card h2 {
+
+    margin: 0 0 14px 0;
+
+    color: #ffffff;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CARD TEXT
+========================================================= */
+
+.trailer-page .admin-analytics-card p {
+
+    margin: 7px 0;
+
+    color: #bdb4d4;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+}
+
+
+.trailer-page .admin-analytics-card strong {
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   OVERVIEW CARD
+========================================================= */
+
+.trailer-page .trailer-overview-card {
+
+    min-height: 120px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   TABLE CARD
+========================================================= */
+
+.trailer-page .trailer-section-card {
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.trailer-page .trailer-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    margin-top: 18px;
+
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.trailer-page .admin-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.trailer-page .admin-table th {
+
+    color: #a855f7;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    padding: 14px 16px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.08);
+
+}
+
+
+/* =========================================================
+   TABLE ROW
+========================================================= */
+
+.trailer-page .admin-table td {
+
+    color: #d8d0e8;
+
+    font-size: 15px;
+
+    padding: 16px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.06);
+
+}
+
+
+/* =========================================================
+   ROW HOVER
+========================================================= */
+
+.trailer-page .admin-table tbody tr:hover {
+
+    background: rgba(139, 92, 246, 0.06);
+
+}
+
+
+/* =========================================================
+   LAST ROW
+========================================================= */
+
+.trailer-page .admin-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .trailer-page .admin-analytics-card {
+
+        padding: 20px;
+
+    }
+
+    .trailer-page .admin-table {
+
+        min-width: 650px;
+
+    }
+
+}
+
+/* =========================================================
+   TRAILER KPI CARDS
+========================================================= */
+
+.trailer-kpi-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+
+    margin: 25px 0 30px;
+
+}
+
+
+.trailer-kpi-card {
+
+    min-height: 125px;
+
+    padding: 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    box-sizing: border-box;
+
+    background: #171526;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.20);
+
+    transition: 0.2s ease;
+
+}
+
+
+.trailer-kpi-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(168, 85, 247, 0.35);
+
+    box-shadow:
+        0 10px 30px rgba(140, 70, 220, 0.18);
+
+}
+
+
+/* ICON */
+
+.trailer-kpi-card .kpi-icon {
+
+    width: 60px;
+
+    height: 60px;
+
+    min-width: 60px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(139, 92, 246, 0.20);
+
+    color: #a855f7;
+
+    font-size: 25px;
+
+}
+
+
+/* NUMBER */
+
+.trailer-kpi-card .kpi-content h2 {
+
+    margin: 0 0 6px 0;
+
+    color: #ffffff;
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+}
+
+
+/* LABEL */
+
+.trailer-kpi-card .kpi-content p {
+
+    margin: 0;
+
+    color: #c9b7e8;
+
+    font-size: 16px;
+
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .trailer-kpi-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   TRAILER ACTIVITY FILTER
+========================================================= */
+
+.trailer-filter-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    gap: 20px;
+
+    margin-top: 22px;
+
+    margin-bottom: 5px;
+
+}
+
+
+.trailer-filter-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+
+.trailer-filter-group label {
+
+    color: #c9b7e8;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+.trailer-filter-group select {
+
+    min-width: 220px;
+
+    padding: 11px 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(168, 85, 247, 0.30);
+
+    background: #171526;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+}
+
+
+.trailer-filter-group select:focus {
+
+    border-color: #a855f7;
+
+    box-shadow:
+        0 0 0 3px rgba(168, 85, 247, 0.10);
+
+}
+
+
+.trailer-filter-group select option {
+
+    background: #171526;
+
+    color: #ffffff;
+
+}
+
+
+.trailer-result-count {
+
+    padding: 11px 17px;
+
+    border-radius: 10px;
+
+    background: rgba(168, 85, 247, 0.10);
+
+    border: 1px solid rgba(168, 85, 247, 0.25);
+
+    color: #d8b4fe;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+/* HIDDEN FILTERED ROW */
+
+.trailer-activity-row.filtered-out {
+
+    display: none;
+
+}
+
+
+@media (max-width: 900px) {
+
+    .trailer-filter-row {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+}
+
+
+</style>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const filter =
+        document.getElementById("interestFilter");
+
+    const rows =
+        document.querySelectorAll(".trailer-activity-row");
+
+    const resultCount =
+        document.getElementById("trailerResultCount");
+
+
+    filter.addEventListener("change", function () {
+
+        const selectedInterest =
+            filter.value;
+
+        let visibleCount = 0;
+
+
+        rows.forEach(function (row) {
+
+            const rowInterest =
+                row.dataset.interest;
+
+
+            if (
+                selectedInterest === "all"
+                ||
+                rowInterest === selectedInterest
+            ) {
+
+                row.classList.remove(
+                    "filtered-out"
+                );
+
+                visibleCount++;
+
+            }
+
+            else {
+
+                row.classList.add(
+                    "filtered-out"
+                );
+
+            }
+
+        });
+
+
+        resultCount.textContent =
+            visibleCount;
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

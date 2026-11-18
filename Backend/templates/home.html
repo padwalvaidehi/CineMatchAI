@@ -1,0 +1,764 @@
+{% extends "base.html" %}
+
+{% block title %}
+Lumora
+{% endblock %}
+
+
+{% block content %}
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        <i class="bi bi-film"></i>
+        <span>Lumora</span>
+    </div>
+
+
+    <ul class="nav-links">
+
+        <li>
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('movies') }}">
+                Movies
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('watchlist') }}">
+                Watchlist
+            </a>
+       </li>
+
+        
+
+        <li>
+    <a href="#top-rated">Top Rated</a>
+</li>
+
+        <li>
+            <a href="{{ url_for('about') }}">
+    About
+</a>
+        </li>
+
+    </ul>
+
+
+    <div class="nav-buttons">
+
+        {% if session.get("user_id") %}
+
+            <span class="welcome-user">
+                Hi, {{ session.get("user_name") }} 👋
+            </span>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="login-btn"
+            >
+                Logout
+            </a>
+
+        {% else %}
+
+            <a
+                href="{{ url_for('login') }}"
+                class="login-btn"
+            >
+                Login
+            </a>
+
+
+            <a
+                href="{{ url_for('register') }}"
+                class="start-btn"
+            >
+                Register
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     HERO SECTION
+========================================================= -->
+
+<section class="hero">
+
+    <div class="hero-left">
+
+        <div class="badge">
+            ✨ AI POWERED RECOMMENDATIONS
+        </div>
+
+
+        <h1>
+            Discover Movies
+            <br>
+            Beyond <span>Imagination</span>
+        </h1>
+
+
+        <p>
+            Find movies you'll love, personalized for your taste,
+            powered by intelligent algorithms.
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a
+                href="{{ url_for('movies') }}"
+                class="explore-btn"
+            >
+                Explore Movies →
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+     HERO POSTER CLOUD
+========================================================= -->
+
+<div class="hero-right">
+
+    <div class="poster-cloud">
+
+        {% for movie in hero_movies %}
+
+            {% set poster = movie.poster_url or movie.poster_path %}
+
+            {% if poster %}
+
+                <div
+                    class="cloud-poster"
+                    data-index="{{ loop.index0 }}"
+                >
+
+                    {% if poster.startswith('http') %}
+
+                        <img
+                            src="{{ poster }}"
+                            alt="{{ movie.title }}"
+                            loading="eager"
+                            onerror="this.src='https://placehold.co/500x750/171522/ffffff?text=No+Poster';"
+                        >
+
+                    {% else %}
+
+                        <img
+                            src="https://image.tmdb.org/t/p/w500{{ poster }}"
+                            alt="{{ movie.title }}"
+                            loading="eager"
+                            onerror="this.src='https://placehold.co/500x750/171522/ffffff?text=No+Poster';"
+                        >
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================================================
+     REUSABLE MOVIE CARD MACRO
+========================================================= -->
+
+{% macro movie_card(movie) %}
+
+    {% set movie_id = movie.tmdb_id or movie.id %}
+    {% set poster = movie.poster_url or movie.poster_path %}
+
+
+    <a
+        href="{{ url_for('movie_details', movie_id=movie_id) }}"
+        class="movie-link"
+    >
+
+        <div class="movie-card">
+
+
+            <!-- POSTER -->
+
+            {% if poster %}
+
+                {% if poster.startswith('http') %}
+
+                    <img
+                        src="{{ poster }}"
+                        alt="{{ movie.title }}"
+                        loading="lazy"
+                        onerror="this.src='https://placehold.co/500x750/171522/ffffff?text=No+Poster';"
+                    >
+
+                {% else %}
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w500{{ poster }}"
+                        alt="{{ movie.title }}"
+                        loading="lazy"
+                        onerror="this.src='https://placehold.co/500x750/171522/ffffff?text=No+Poster';"
+                    >
+
+                {% endif %}
+
+            {% else %}
+
+                <img
+                    src="https://placehold.co/500x750/171522/ffffff?text=No+Poster"
+                    alt="No poster available"
+                    loading="lazy"
+                >
+
+            {% endif %}
+
+
+
+            <!-- MOVIE TITLE -->
+
+            <h3>
+                {{ movie.title }}
+            </h3>
+
+
+
+            <!-- GENRES -->
+
+            {% if movie.genres %}
+
+                <p class="genre">
+                    {{ movie.genres }}
+                </p>
+
+            {% else %}
+
+                <p class="genre">
+                    Movie
+                </p>
+
+            {% endif %}
+
+
+
+            <!-- RATING + YEAR -->
+
+            <div class="movie-info">
+
+               <p class="rating">
+    ⭐
+    {{
+        "%.1f"|format(
+            movie.vote_average
+            if movie.vote_average is defined and movie.vote_average
+            else (
+                movie.rating
+                if movie.rating is defined and movie.rating
+                else 0
+            )
+        )
+    }}
+</p>
+
+
+                <p class="year">
+
+                    {% if movie.release_date %}
+
+                        {{ movie.release_date[:4] }}
+
+                    {% else %}
+
+                        N/A
+
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </a>
+
+{% endmacro %}
+
+
+
+<!-- =========================================================
+     TRENDING NOW
+========================================================= -->
+
+<section
+    class="trending genre-row"
+    id="trending-section"
+>
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                🔥 Trending Now
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="trending-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="trending-row"
+            >
+                &#10095;
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="trending-row"
+    >
+
+        {% for movie in movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     NEW RELEASES
+========================================================= -->
+
+<section class="coming-soon genre-row">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                🎬 New Releases
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="new-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="new-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="new-row"
+    >
+
+        {% for movie in upcoming_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ACTION
+========================================================= -->
+
+<section class="coming-soon genre-row">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                🎬 Action
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="action-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="action-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}?genres=Action"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="action-row"
+    >
+
+        {% for movie in action_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     COMEDY
+========================================================= -->
+
+<section class="coming-soon genre-row">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                😂 Comedy
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="comedy-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="comedy-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}?genres=Comedy"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="comedy-row"
+    >
+
+        {% for movie in comedy_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ROMANCE
+========================================================= -->
+
+<section class="coming-soon genre-row">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                ❤️ Romance
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="romance-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="romance-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}?genres=Romance"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="romance-row"
+    >
+
+        {% for movie in romance_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     THRILLER
+========================================================= -->
+
+<section class="coming-soon genre-row">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                🔪 Thriller
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="thriller-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="thriller-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}?genres=Thriller"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="thriller-row"
+    >
+
+        {% for movie in thriller_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     TOP RATED
+========================================================= -->
+
+<section class="top-rated genre-row" id="top-rated">
+
+    <div class="section-header">
+
+        <div class="section-title">
+
+            <h2>
+                ⭐ Top Rated
+            </h2>
+
+        </div>
+
+
+        <div class="section-controls">
+
+            <button
+                class="scroll-btn left"
+                data-target="top-row"
+            >
+                &#10094;
+            </button>
+
+
+            <button
+                class="scroll-btn right"
+                data-target="top-row"
+            >
+                &#10095;
+            </button>
+
+
+            <a
+                href="{{ url_for('movies') }}?sort=rating"
+                class="view-all"
+            >
+                View All
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="movie-grid"
+        id="top-row"
+    >
+
+        {% for movie in top_rated_movies %}
+
+            {{ movie_card(movie) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+{% endblock %}

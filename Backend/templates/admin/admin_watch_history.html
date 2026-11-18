@@ -1,0 +1,814 @@
+{% extends "base.html" %}
+
+{% block title %}
+Watch History
+{% endblock %}
+
+
+{% block content %}
+
+<div class="app-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    🎬 Watch History
+                </h1>
+
+                <p>
+                    View movies watched by Lumora users.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             WATCH HISTORY OVERVIEW
+             ================================================= -->
+
+        <div class="watch-history-summary">
+
+            <div class="summary-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <h2>
+                    Watch History Overview
+                </h2>
+
+                <p>
+                    Total Watch History Records
+                </p>
+
+                <strong>
+                    {{ watch_history|length }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             USER WATCH ACTIVITY
+             ================================================= -->
+
+        <div class="watch-history-card">
+
+            <div class="watch-history-card-header">
+
+                <div>
+
+                    <h2>
+                        🎥 User Watch Activity
+                    </h2>
+
+                    <p>
+                        Movies watched by registered Lumora users.
+                    </p>
+
+                </div>
+
+                <span class="history-count-badge">
+
+                    <i class="bi bi-film"></i>
+
+                    {{ watch_history|length }} Records
+
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 TABLE
+                 ================================================= -->
+
+            <div class="watch-history-table-wrapper">
+
+                <table class="watch-history-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                👤 User
+                            </th>
+
+                            <th>
+                                📧 Email
+                            </th>
+
+                            <th>
+                                🎬 Movie
+                            </th>
+
+                            <th>
+                                🕒 Watched At
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in watch_history %}
+
+                        <tr>
+
+
+                            <!-- NUMBER -->
+
+                            <td class="history-number">
+
+                                {{ loop.index }}
+
+                            </td>
+
+
+                            <!-- USER -->
+
+                            <td>
+
+                                <div class="history-user">
+
+                                    <div class="history-avatar">
+
+                                        {{ (item["user_name"] or "U")[0]|upper }}
+
+                                    </div>
+
+                                    <strong>
+                                        {{ item["user_name"] or "Unknown User" }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- EMAIL -->
+
+                            <td class="history-email">
+
+                                {{ item["user_email"] or "Not Available" }}
+
+                            </td>
+
+
+                            <!-- MOVIE -->
+
+                            <td>
+
+                                <div class="history-movie">
+
+                                    <span class="movie-icon">
+                                        🎬
+                                    </span>
+
+                                    <span>
+                                        {{ item["movie_title"] or "Unknown Movie" }}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- WATCHED AT -->
+
+                            <td>
+
+                                <span class="watched-time">
+
+                                    <i class="bi bi-clock"></i>
+
+                                    {{ item["watched_at"] or "Not Available" }}
+
+                                </span>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% else %}
+
+
+                        <!-- EMPTY STATE -->
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="history-empty"
+                            >
+
+                                <i class="bi bi-clock-history"></i>
+
+                                <h3>
+                                    No Watch History
+                                </h3>
+
+                                <p>
+                                    No movie watch activity is available yet.
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     WATCH HISTORY PAGE STYLE
+========================================================= -->
+
+<style>
+
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
+
+.watch-history-summary {
+
+    width: 100%;
+
+    min-height: 125px;
+
+    margin: 25px 0 30px;
+
+    padding: 24px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    border-radius: 16px;
+
+    background: #171526;
+
+    border: 1px solid rgba(168, 85, 247, 0.14);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.20);
+
+    transition: 0.25s ease;
+
+}
+
+
+.watch-history-summary:hover {
+
+    transform: translateY(-2px);
+
+    border-color: rgba(168, 85, 247, 0.30);
+
+    box-shadow:
+        0 10px 30px rgba(140, 70, 220, 0.14);
+
+}
+
+
+/* =========================================================
+   SUMMARY ICON
+========================================================= */
+
+.summary-icon {
+
+    width: 62px;
+
+    height: 62px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(139, 92, 246, 0.18);
+
+    color: #a855f7;
+
+    font-size: 27px;
+
+}
+
+
+/* =========================================================
+   SUMMARY CONTENT
+========================================================= */
+
+.summary-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.summary-content h2 {
+
+    margin: 0 0 5px;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+
+.summary-content p {
+
+    margin: 0 0 4px;
+
+    color: #a99fbd;
+
+    font-size: 14px;
+
+}
+
+
+.summary-content strong {
+
+    color: #c084fc;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   MAIN HISTORY CARD
+========================================================= */
+
+.watch-history-card {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+
+    background: #171526;
+
+    border: 1px solid rgba(168, 85, 247, 0.12);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.20);
+
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.watch-history-card-header {
+
+    padding: 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    background: #171526;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+}
+
+
+.watch-history-card-header h2 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+
+.watch-history-card-header p {
+
+    margin: 6px 0 0;
+
+    color: #9f95b8;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   RECORD COUNT
+========================================================= */
+
+.history-count-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 9px 14px;
+
+    border-radius: 20px;
+
+    background: rgba(168, 85, 247, 0.12);
+
+    border: 1px solid rgba(168, 85, 247, 0.20);
+
+    color: #c084fc;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.watch-history-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.watch-history-table {
+
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+
+}
+
+
+.watch-history-table thead {
+
+    background: #211b35;
+
+}
+
+
+.watch-history-table th {
+
+    padding: 17px 16px;
+
+    text-align: left;
+
+    color: #c084fc;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    border-bottom: 1px solid rgba(168, 85, 247, 0.18);
+
+}
+
+
+.watch-history-table td {
+
+    padding: 17px 16px;
+
+    color: #d7cee8;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+}
+
+
+.watch-history-table tbody tr {
+
+    transition: 0.2s ease;
+
+}
+
+
+.watch-history-table tbody tr:hover {
+
+    background: rgba(168, 85, 247, 0.07);
+
+}
+
+
+.watch-history-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   NUMBER
+========================================================= */
+
+.history-number {
+
+    color: #817895 !important;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   USER
+========================================================= */
+
+.history-user {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+}
+
+
+.history-avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #8b5cf6,
+        #ec4899
+    );
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.history-user strong {
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+.history-email {
+
+    color: #c7bddd !important;
+
+}
+
+
+/* =========================================================
+   MOVIE
+========================================================= */
+
+.history-movie {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    color: #ddd5eb;
+
+}
+
+
+.movie-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 7px;
+
+    background: rgba(139, 92, 246, 0.12);
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   WATCHED TIME
+========================================================= */
+
+.watched-time {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #b9add0;
+
+    white-space: nowrap;
+
+}
+
+
+.watched-time i {
+
+    color: #a855f7;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.history-empty {
+
+    padding: 70px 20px !important;
+
+    text-align: center !important;
+
+}
+
+
+.history-empty i {
+
+    display: block;
+
+    margin-bottom: 15px;
+
+    color: #8b5cf6;
+
+    font-size: 42px;
+
+}
+
+
+.history-empty h3 {
+
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+}
+
+
+.history-empty p {
+
+    margin: 0;
+
+    color: #8f859f;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .watch-history-card-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+    .watch-history-summary {
+
+        padding: 20px;
+
+    }
+
+}
+
+</style>
+
+
+{% endblock %}

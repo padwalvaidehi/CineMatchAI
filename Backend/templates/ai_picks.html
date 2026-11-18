@@ -1,0 +1,2156 @@
+{% extends "base.html" %}
+
+{% block title %}AI Picks - Lumora{% endblock %}
+
+{% block content %}
+
+<div class="ai-picks-page">
+
+    <!-- =====================================================
+         BACK BUTTON
+    ====================================================== -->
+
+    <div class="ai-back-wrapper">
+
+        <button
+            type="button"
+            class="ai-back-btn"
+            id="aiBackBtn"
+            onclick="goBackFromAIPicks()"
+        >
+            ← Back
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="vibe-header">
+
+        {% if selected_mood %}
+
+            <span class="vibe-eyebrow">
+                LUMORA • YOUR MOOD
+            </span>
+
+            <h1>
+                {{ selected_mood|title }}
+                <span>Vibe</span>
+            </h1>
+
+            <p>
+                Movies picked for your {{ selected_mood }} mood.
+            </p>
+
+        {% else %}
+
+            <span class="vibe-eyebrow">
+                LUMORA • AI PICKS
+            </span>
+
+            <h1>
+                Pick Your <span>Vibe</span>
+            </h1>
+
+            <p>
+                Tell Lumora what kind of movie night you're feeling.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         MOOD BOARD
+    ====================================================== -->
+
+    <div class="mood-board">
+
+        <!-- 01 — COZY -->
+        <button
+            class="mood-card cozy {% if selected_mood == 'cozy' %}selected{% endif %}"
+            data-mood="cozy"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ◐
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    01
+                </span>
+
+                <h3>
+                    Cozy & Chill
+                </h3>
+
+                <p>
+                    I just want to relax with a feel-good movie.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 02 — EMOTIONAL -->
+        <button
+            class="mood-card emotional {% if selected_mood == 'emotional' %}selected{% endif %}"
+            data-mood="emotional"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ♡
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    02
+                </span>
+
+                <h3>
+                    Emotional Damage
+                </h3>
+
+                <p>
+                    Give me something that hits right in the feelings.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 03 — ADRENALINE -->
+        <button
+            class="mood-card adrenaline {% if selected_mood == 'adrenaline' %}selected{% endif %}"
+            data-mood="adrenaline"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ϟ
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    03
+                </span>
+
+                <h3>
+                    Adrenaline Rush
+                </h3>
+
+                <p>
+                    Keep me on the edge of my seat.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 04 — MYSTERY -->
+        <button
+            class="mood-card mystery {% if selected_mood == 'mystery' %}selected{% endif %}"
+            data-mood="mystery"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ◈
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    04
+                </span>
+
+                <h3>
+                    Make Me Guess
+                </h3>
+
+                <p>
+                    I want to solve the mystery before they do.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 05 — HORROR -->
+        <button
+            class="mood-card horror {% if selected_mood == 'horror' %}selected{% endif %}"
+            data-mood="horror"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                †
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    05
+                </span>
+
+                <h3>
+                    Give Me Nightmares
+                </h3>
+
+                <p>
+                    I'm voluntarily making bad decisions tonight.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 06 — FANTASY -->
+        <button
+            class="mood-card fantasy {% if selected_mood == 'fantasy' %}selected{% endif %}"
+            data-mood="fantasy"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ✦
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    06
+                </span>
+
+                <h3>
+                    Escape Reality
+                </h3>
+
+                <p>
+                    Take me somewhere completely impossible.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 07 — ROMANCE -->
+        <button
+            class="mood-card romance {% if selected_mood == 'romance' %}selected{% endif %}"
+            data-mood="romance"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ∞
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    07
+                </span>
+
+                <h3>
+                    Butterflies Please
+                </h3>
+
+                <p>
+                    I need romance. No questions asked.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 08 — THINK -->
+        <button
+            class="mood-card thoughtful {% if selected_mood == 'mind' %}selected{% endif %}"
+            data-mood="mind"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ◌
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    08
+                </span>
+
+                <h3>
+                    Make Me Think
+                </h3>
+
+                <p>
+                    Give me something I'll think about tomorrow.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 09 — FUNNY -->
+        <button
+            class="mood-card fun {% if selected_mood == 'funny' %}selected{% endif %}"
+            data-mood="funny"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                °
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    09
+                </span>
+
+                <h3>
+                    No Thoughts, Just Laughs
+                </h3>
+
+                <p>
+                    My brain is officially closed.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+
+        <!-- 10 — EXPLORE -->
+        <button
+            class="mood-card discover {% if selected_mood == 'explore' %}selected{% endif %}"
+            data-mood="explore"
+            type="button"
+        >
+
+            <div class="mood-glow"></div>
+
+            <div class="mood-icon">
+                ◎
+            </div>
+
+            <div class="mood-content">
+
+                <span class="mood-number">
+                    10
+                </span>
+
+                <h3>
+                    Show Me Something New
+                </h3>
+
+                <p>
+                    Take me somewhere I've never been.
+                </p>
+
+            </div>
+
+            <span class="mood-arrow">
+                ↗
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         RECOMMENDATIONS
+    ====================================================== -->
+
+    {% if ai_movies %}
+
+        <div class="recommendation-section">
+
+            <div class="section-heading">
+
+                <span class="section-eyebrow">
+                    YOUR MOVIE PICKS
+                </span>
+
+                <h2>
+                    🎯 Recommended For You
+                </h2>
+
+                <p>
+                    Movies selected based on your activity.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 MOVIE GRID
+            ================================================== -->
+
+            <div class="ai-movie-grid">
+
+                {% for movie in ai_movies %}
+
+                    <article class="ai-movie-card">
+
+                        <!-- POSTER -->
+
+                        <a
+                            href="{{ url_for('movie_details', movie_id=movie.id) }}"
+                            class="ai-poster-link"
+                        >
+
+                            {% if movie.poster_url %}
+
+                                <img
+                                    src="{{ movie.poster_url }}"
+                                    alt="{{ movie.title }}"
+                                    class="ai-movie-poster"
+                                    loading="lazy"
+                                >
+
+                            {% else %}
+
+                                <div class="ai-no-poster">
+                                    🎬
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- LANGUAGE BADGE -->
+
+                            {% if movie.recommendation_language %}
+
+                                {% if movie.recommendation_language == "hi" %}
+
+                                    <span class="ai-language-badge">
+                                        🇮🇳 Bollywood
+                                    </span>
+
+                                {% elif movie.recommendation_language == "en" %}
+
+                                    <span class="ai-language-badge">
+                                        🇺🇸 Hollywood
+                                    </span>
+
+                                {% elif movie.recommendation_language == "ko" %}
+
+                                    <span class="ai-language-badge">
+                                        🇰🇷 Korean
+                                    </span>
+
+                                {% elif movie.recommendation_language == "ja" %}
+
+                                    <span class="ai-language-badge">
+                                        🇯🇵 Anime
+                                    </span>
+
+                                {% elif movie.recommendation_language == "th" %}
+
+                                    <span class="ai-language-badge">
+                                        🇹🇭 Thai
+                                    </span>
+
+                                {% elif movie.recommendation_language == "zh" %}
+
+                                    <span class="ai-language-badge">
+                                        🇨🇳 Chinese
+                                    </span>
+
+                                {% elif movie.recommendation_language == "es" %}
+
+                                    <span class="ai-language-badge">
+                                        🇪🇸 Spanish
+                                    </span>
+
+                                {% elif movie.recommendation_language == "fr" %}
+
+                                    <span class="ai-language-badge">
+                                        🇫🇷 French
+                                    </span>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <!-- MOVIE INFORMATION -->
+
+                        <div class="ai-movie-info">
+
+                            <h3>
+                                {{ movie.title }}
+                            </h3>
+
+
+                            <!-- RATING + YEAR -->
+
+                            <div class="ai-movie-meta">
+
+                                <span class="ai-rating">
+
+                                    ⭐
+                                    {{ "%.1f"|format(movie.vote_average or 0) }}
+
+                                </span>
+
+
+                                {% if movie.release_date %}
+
+                                    <span class="ai-release-date">
+                                        {{ movie.release_date[:4] }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- GENRES -->
+
+                            {% if movie.genres %}
+
+                                <div class="ai-genres">
+
+                                    {% if movie.genres is string %}
+
+                                        {{ movie.genres }}
+
+                                    {% else %}
+
+                                        {% for genre in movie.genres %}
+
+                                            {% if genre is mapping %}
+
+                                                {{ genre.name }}
+
+                                            {% else %}
+
+                                                {{ genre }}
+
+                                            {% endif %}
+
+                                            {% if not loop.last %}
+                                                ·
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             EMPTY STATE
+        ================================================== -->
+
+        <div class="ai-empty-state">
+
+            <div class="empty-icon">
+                ◈
+            </div>
+
+            <h2>
+                Let's find your movie vibe.
+            </h2>
+
+            <p>
+                Pick a mood above and Lumora will find something
+                that matches it.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+
+<!-- =========================================================
+     PAGE CSS
+========================================================= -->
+
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.ai-picks-page {
+
+    width: 100%;
+
+    max-width: 1700px;
+
+    margin: 0 auto;
+
+    padding: 28px 50px 80px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.ai-back-wrapper {
+
+    width: 100%;
+
+    margin-bottom: 28px;
+
+}
+
+
+.ai-back-btn {
+
+    border: none;
+
+    background: transparent;
+
+    color: #b9a4d8;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    padding: 7px 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    transition:
+        color .2s ease,
+        transform .2s ease;
+
+}
+
+
+.ai-back-btn:hover {
+
+    color: #ffffff;
+
+    transform: translateX(-4px);
+
+}
+
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.vibe-header {
+
+    width: 100%;
+
+    margin-bottom: 38px;
+
+}
+
+
+.vibe-eyebrow {
+
+    display: block;
+
+    color: #c98cff;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.vibe-header h1 {
+
+    margin: 0 0 9px;
+
+    color: #ffffff;
+
+    font-size: 46px;
+
+    line-height: 1.08;
+
+    font-weight: 800;
+
+    letter-spacing: -1.2px;
+
+}
+
+
+.vibe-header h1 span {
+
+    background:
+        linear-gradient(
+            90deg,
+            #c084fc,
+            #f472b6,
+            #fb7185
+        );
+
+    background-clip: text;
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+}
+
+
+.vibe-header p {
+
+    margin: 0;
+
+    color: #9d91ad;
+
+    font-size: 15px;
+
+}
+
+
+
+/* =========================================================
+   MOOD BOARD
+========================================================= */
+
+.mood-board {
+
+    width: 100%;
+
+    margin-bottom: 65px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 18px;
+
+}
+
+
+
+/* =========================================================
+   MOOD CARD
+========================================================= */
+
+.mood-card {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 170px;
+
+    padding: 22px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    border-radius: 18px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.09);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.015)
+        );
+
+    color: #ffffff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    backdrop-filter: blur(14px);
+
+    -webkit-backdrop-filter: blur(14px);
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease,
+        background .3s ease;
+
+}
+
+
+.mood-card:hover {
+
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(218,170,255,.42);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    box-shadow:
+        0 18px 40px
+        rgba(0,0,0,.38);
+
+}
+
+
+.mood-card:active {
+
+    transform:
+        translateY(-2px)
+        scale(.99);
+
+}
+
+
+
+/* =========================================================
+   MOOD GLOW
+========================================================= */
+
+.mood-glow {
+
+    position: absolute;
+
+    width: 190px;
+
+    height: 190px;
+
+    right: -85px;
+
+    top: -85px;
+
+    border-radius: 50%;
+
+    opacity: .11;
+
+    filter: blur(50px);
+
+    pointer-events: none;
+
+    transition:
+        transform .45s ease,
+        opacity .45s ease;
+
+}
+
+
+.mood-card:hover .mood-glow {
+
+    transform: scale(1.6);
+
+    opacity: .25;
+
+}
+
+
+
+/* =========================================================
+   MOOD ICON
+========================================================= */
+
+.mood-icon {
+
+    width: 62px;
+
+    height: 62px;
+
+    min-width: 62px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-right: 16px;
+
+    border-radius: 17px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    border:
+        1px solid
+        rgba(255,255,255,.10);
+
+    color: #e8d5ff;
+
+    font-size: 29px;
+
+    font-weight: 300;
+
+    position: relative;
+
+    z-index: 2;
+
+    box-shadow:
+        inset 0 0 20px
+        rgba(255,255,255,.025);
+
+    transition:
+        transform .3s ease,
+        background .3s ease,
+        color .3s ease;
+
+}
+
+
+.mood-card:hover .mood-icon {
+
+    transform:
+        scale(1.07)
+        rotate(-3deg);
+
+    background:
+        rgba(255,255,255,.09);
+
+    color: #ffffff;
+
+}
+
+
+
+/* =========================================================
+   MOOD CONTENT
+========================================================= */
+
+.mood-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.mood-number {
+
+    display: block;
+
+    color: #70657d;
+
+    font-size: 9px;
+
+    letter-spacing: 2.5px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+}
+
+
+.mood-content h3 {
+
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+}
+
+
+.mood-content p {
+
+    margin: 0;
+
+    max-width: 210px;
+
+    color: #94899f;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+}
+
+
+
+/* =========================================================
+   MOOD ARROW
+========================================================= */
+
+.mood-arrow {
+
+    position: absolute;
+
+    right: 17px;
+
+    bottom: 14px;
+
+    color: #746a80;
+
+    font-size: 18px;
+
+    z-index: 3;
+
+    transition:
+        transform .3s ease,
+        color .3s ease;
+
+}
+
+
+.mood-card:hover .mood-arrow {
+
+    transform:
+        translate(4px,-4px);
+
+    color: #e4c5ff;
+
+}
+
+
+
+/* =========================================================
+   SELECTED MOOD
+========================================================= */
+
+.mood-card.selected {
+
+    border-color:
+        rgba(218,160,255,.65);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(137,72,190,.18),
+            rgba(236,72,153,.07)
+        );
+
+    box-shadow:
+        0 0 35px
+        rgba(170,90,255,.10);
+
+}
+
+
+
+/* =========================================================
+   MOOD COLORS
+========================================================= */
+
+.cozy .mood-glow {
+    background: #8b5cf6;
+}
+
+.emotional .mood-glow {
+    background: #ec4899;
+}
+
+.adrenaline .mood-glow {
+    background: #f97316;
+}
+
+.mystery .mood-glow {
+    background: #6366f1;
+}
+
+.horror .mood-glow {
+    background: #ef4444;
+}
+
+.fantasy .mood-glow {
+    background: #a855f7;
+}
+
+.romance .mood-glow {
+    background: #f43f5e;
+}
+
+.thoughtful .mood-glow {
+    background: #06b6d4;
+}
+
+.fun .mood-glow {
+    background: #eab308;
+}
+
+.discover .mood-glow {
+    background: #14b8a6;
+}
+
+
+
+/* =========================================================
+   RECOMMENDATION SECTION
+========================================================= */
+
+.recommendation-section {
+
+    width: 100%;
+
+}
+
+
+.section-heading {
+
+    margin-bottom: 24px;
+
+}
+
+
+.section-eyebrow {
+
+    display: block;
+
+    color: #a77bd4;
+
+    font-size: 10px;
+
+    letter-spacing: 2.5px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+
+}
+
+
+.section-heading h2 {
+
+    margin: 0 0 6px;
+
+    color: #ffffff;
+
+    font-size: 28px;
+
+    line-height: 1.2;
+
+}
+
+
+.section-heading p {
+
+    margin: 0;
+
+    color: #8f849b;
+
+    font-size: 13px;
+
+}
+
+
+
+/* =========================================================
+   MOVIE GRID
+
+   IMPORTANT:
+   This keeps all movie cards equal width and prevents
+   titles from being squeezed into tiny columns.
+========================================================= */
+
+.ai-movie-grid {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 20px;
+
+}
+
+
+
+/* =========================================================
+   MOVIE CARD
+
+   Fixed structure:
+   POSTER
+   ↓
+   INFO
+   ↓
+   TITLE
+   ↓
+   RATING + YEAR
+   ↓
+   GENRES
+========================================================= */
+
+.ai-movie-card {
+
+    width: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    background:
+        rgba(255,255,255,.025);
+
+    box-sizing: border-box;
+
+    transition:
+        transform .28s ease,
+        border-color .28s ease,
+        box-shadow .28s ease;
+
+}
+
+
+.ai-movie-card:hover {
+
+    transform:
+        translateY(-6px);
+
+    border-color:
+        rgba(221,90,255,.55);
+
+    box-shadow:
+
+        0 18px 40px
+        rgba(0,0,0,.40),
+
+        0 0 25px
+        rgba(190,70,255,.08);
+
+}
+
+
+
+/* =========================================================
+   POSTER LINK
+========================================================= */
+
+.ai-poster-link {
+
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+
+    background:
+        #120a18;
+
+    text-decoration: none;
+
+}
+
+
+
+/* =========================================================
+   POSTER
+========================================================= */
+
+.ai-movie-poster {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    transition:
+        transform .4s ease;
+
+}
+
+
+.ai-movie-card:hover .ai-movie-poster {
+
+    transform:
+        scale(1.045);
+
+}
+
+
+
+/* =========================================================
+   NO POSTER
+========================================================= */
+
+.ai-no-poster {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        #17121f;
+
+    color: #a77bd4;
+
+    font-size: 42px;
+
+}
+
+
+
+/* =========================================================
+   LANGUAGE BADGE
+========================================================= */
+
+.ai-language-badge {
+
+    position: absolute;
+
+    left: 10px;
+
+    bottom: 10px;
+
+    z-index: 5;
+
+    padding:
+        6px 10px;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    background:
+        rgba(10,5,15,.88);
+
+    border:
+        1px solid
+        rgba(255,255,255,.14);
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+}
+
+
+
+/* =========================================================
+   MOVIE INFO
+
+   This is the important part.
+   Every card gets the same internal spacing.
+========================================================= */
+
+.ai-movie-info {
+
+    width: 100%;
+
+    min-width: 0;
+
+    padding:
+        16px 15px 17px;
+
+    box-sizing: border-box;
+
+}
+
+
+
+/* =========================================================
+   MOVIE TITLE
+
+   Maximum 2 lines.
+   NEVER break individual letters.
+========================================================= */
+
+.ai-movie-info h3 {
+
+    width: 100%;
+
+    margin:
+        0 0 10px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 1.35;
+
+    letter-spacing: -.15px;
+
+    white-space: normal;
+
+    word-break: normal;
+
+    overflow-wrap: break-word;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 2;
+
+    line-clamp: 2;
+
+    overflow: hidden;
+
+    min-height: 43px;
+
+}
+
+
+
+/* =========================================================
+   RATING + YEAR
+
+   ALWAYS stays on one line.
+========================================================= */
+
+.ai-movie-meta {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    min-width: 0;
+
+    margin: 0;
+
+    color: #a69aaa;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    white-space: nowrap;
+
+}
+
+
+.ai-movie-meta span {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    white-space: nowrap;
+
+}
+
+
+.ai-rating {
+
+    color: #f0d7ff;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.ai-release-date {
+
+    color: #a69aaa;
+
+    font-size: 13px;
+
+}
+
+
+
+/* =========================================================
+   GENRES
+
+   FIXES:
+   [{'name': 'Thriller'}, {'name': 'Horror'}]
+
+   Now displays:
+   Thriller · Horror
+========================================================= */
+
+.ai-genres {
+
+    width: 100%;
+
+    min-width: 0;
+
+    margin:
+        10px 0 0;
+
+    color: #8f849b;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    line-height: 1.45;
+
+    white-space: normal;
+
+    word-break: normal;
+
+    overflow-wrap: break-word;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 2;
+
+    line-clamp: 2;
+
+    overflow: hidden;
+
+    min-height: 35px;
+
+}
+
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.ai-empty-state {
+
+    width: 100%;
+
+    max-width: 600px;
+
+    margin:
+        80px auto;
+
+    text-align: center;
+
+}
+
+
+.empty-icon {
+
+    margin-bottom: 18px;
+
+    color: #c084fc;
+
+    font-size: 55px;
+
+}
+
+
+.ai-empty-state h2 {
+
+    margin:
+        0 0 10px;
+
+    color: #ffffff;
+
+    font-size: 27px;
+
+}
+
+
+.ai-empty-state p {
+
+    color: #aaa;
+
+    line-height: 1.6;
+
+}
+
+
+
+/* =========================================================
+   LARGE SCREENS
+========================================================= */
+
+@media (min-width: 1600px) {
+
+    .ai-picks-page {
+
+        padding-left: 60px;
+
+        padding-right: 60px;
+
+    }
+
+    .ai-movie-grid {
+
+        gap: 22px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   1350px
+========================================================= */
+
+@media (max-width: 1350px) {
+
+    .mood-board {
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+    }
+
+
+    .ai-movie-grid {
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+    }
+
+}
+
+
+
+/* =========================================================
+   1100px
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .ai-picks-page {
+
+        padding-left: 35px;
+
+        padding-right: 35px;
+
+    }
+
+
+    .mood-board {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    }
+
+
+    .ai-movie-grid {
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+    }
+
+}
+
+
+
+/* =========================================================
+   900px
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .ai-movie-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    }
+
+
+    .mood-board {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+
+/* =========================================================
+   700px
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .ai-picks-page {
+
+        padding:
+            25px 20px 60px;
+
+    }
+
+
+    .vibe-header h1 {
+
+        font-size: 38px;
+
+    }
+
+    .hero-right {
+    top: 390px;
+    height: 400px;
+    width: 100%;
+    position: absolute;
+}
+
+
+    .mood-board {
+
+        grid-template-columns:
+            1fr;
+
+        gap: 15px;
+
+    }
+
+
+    .ai-movie-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 15px;
+
+    }
+
+
+    .mood-card {
+
+        min-height: 150px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   500px
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .ai-picks-page {
+
+        padding:
+            22px 15px 50px;
+
+    }
+
+
+    .vibe-header h1 {
+
+        font-size: 33px;
+
+    }
+
+
+    .vibe-header p {
+
+        font-size: 14px;
+
+    }
+
+
+    .ai-movie-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .mood-icon {
+
+        width: 56px;
+
+        height: 56px;
+
+        min-width: 56px;
+
+        font-size: 26px;
+
+    }
+
+
+    .mood-card {
+
+        padding: 19px;
+
+    }
+
+   .hero-right {
+    top: 410px;
+    height: 360px;
+    width: 100%;
+    position: absolute;
+}
+    .ai-movie-info {
+
+        padding:
+            15px 13px 16px;
+
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       DYNAMIC BACK BUTTON
+    ===================================================== */
+
+    const backButton =
+        document.getElementById("aiBackBtn");
+
+
+    if (backButton) {
+
+        const referrer =
+            document.referrer;
+
+
+        if (!referrer) {
+
+            backButton.innerHTML =
+                "← Back to Movies";
+
+        }
+
+        else {
+
+            try {
+
+                const previousURL =
+                    new URL(referrer);
+
+
+                if (
+                    previousURL.origin !==
+                    window.location.origin
+                ) {
+
+                    backButton.innerHTML =
+                        "← Back to Movies";
+
+                }
+
+                else {
+
+                    const path =
+                        previousURL.pathname;
+
+
+                    if (
+                        path === "/movies" ||
+                        path.startsWith("/movies/")
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to Movies";
+
+                    }
+
+                    else if (
+                        path === "/watchlist" ||
+                        path.startsWith("/watchlist/")
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to Watchlist";
+
+                    }
+
+                    else if (
+                        path === "/history" ||
+                        path.startsWith("/history/")
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to History";
+
+                    }
+
+                    else if (
+                        path.startsWith("/movie/")
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to Movie Details";
+
+                    }
+
+                    else if (
+                        path === "/" ||
+                        path === "/home"
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to Home";
+
+                    }
+
+                    else if (
+                        path === "/ai-picks"
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back";
+
+                    }
+
+                    else if (
+                        path === "/mood-results"
+                    ) {
+
+                        backButton.innerHTML =
+                            "← Back to movies";
+
+                    }
+
+                    else {
+
+                        backButton.innerHTML =
+                            "← Back";
+
+                    }
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Back button error:",
+                    error
+                );
+
+                backButton.innerHTML =
+                    "← Back";
+
+            }
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       MOOD CARDS
+    ===================================================== */
+
+    const moodCards =
+        document.querySelectorAll(".mood-card");
+
+
+   moodCards.forEach(function (card) {
+
+    card.addEventListener("click", async function () {
+
+        const mood =
+            card.dataset.mood;
+
+        await fetch(
+            "{{ url_for('track_mood') }}",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    mood: mood
+                })
+            }
+        );
+
+        window.location.href =
+            "{{ url_for('mood_results') }}?mood=" +
+            encodeURIComponent(mood);
+
+    });
+
+});
+
+});
+
+
+
+/* =========================================================
+   BACK BUTTON FUNCTION
+========================================================= */
+
+function goBackFromAIPicks() {
+
+   window.location.href = "{{ url_for('movies') }}";
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,964 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.dashboard-page .main-content {
+    padding-bottom: 60px;
+}
+
+
+/* =========================================================
+   DASHBOARD WELCOME
+========================================================= */
+
+.dashboard-welcome {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(139, 92, 246, 0.12),
+            rgba(236, 72, 153, 0.08)
+        );
+
+    border: 1px solid rgba(168, 85, 247, 0.16);
+
+    border-radius: 20px;
+
+    padding: 28px 30px;
+
+    margin-bottom: 28px;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+.dashboard-welcome::after {
+
+    content: "✦";
+
+    position: absolute;
+
+    right: 35px;
+
+    top: 15px;
+
+    font-size: 90px;
+
+    color: rgba(168, 85, 247, 0.08);
+
+    pointer-events: none;
+
+}
+
+
+.dashboard-welcome h1 {
+
+    margin: 0 0 8px 0;
+
+    color: #ffffff;
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+}
+
+
+.dashboard-welcome p {
+
+    margin: 0;
+
+    color: #bdb4d4;
+
+    font-size: 16px;
+
+}
+
+
+/* =========================================================
+   KPI GRID
+========================================================= */
+
+.dashboard-page .dashboard-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 28px;
+
+}
+
+
+/* =========================================================
+   KPI CARDS
+========================================================= */
+
+.dashboard-page .dashboard-card {
+
+    min-height: 125px;
+
+    padding: 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    box-sizing: border-box;
+
+    background: #171526;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.20);
+
+    transition: 0.2s ease;
+
+}
+
+
+.dashboard-page .dashboard-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(168, 85, 247, 0.35);
+
+    box-shadow:
+        0 10px 30px
+        rgba(140, 70, 220, 0.16);
+
+}
+
+
+/* =========================================================
+   KPI ICON
+========================================================= */
+
+.dashboard-page .dashboard-card > i {
+
+    width: 58px;
+
+    height: 58px;
+
+    min-width: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        rgba(139, 92, 246, 0.14);
+
+    color: #a855f7;
+
+    font-size: 25px;
+
+}
+
+
+/* =========================================================
+   KPI NUMBERS
+========================================================= */
+
+.dashboard-page .dashboard-card h3 {
+
+    margin: 0 0 6px 0;
+
+    color: #ffffff;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    line-height: 1.1;
+
+}
+
+
+/* =========================================================
+   KPI LABEL
+========================================================= */
+
+.dashboard-page .dashboard-card p {
+
+    margin: 0;
+
+    color: #bdb4d4;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   FIFTH KPI CARD
+========================================================= */
+
+.dashboard-page .dashboard-card:last-child {
+
+    grid-column: span 2;
+
+}
+
+
+/* =========================================================
+   PLATFORM OVERVIEW
+========================================================= */
+
+.dashboard-overview {
+
+    background: #171526;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 18px;
+
+    padding: 26px;
+
+    margin-bottom: 28px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.18);
+
+}
+
+
+.dashboard-overview-header {
+
+    margin-bottom: 25px;
+
+}
+
+
+.dashboard-overview-header h2 {
+
+    margin: 0 0 7px 0;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+}
+
+
+.dashboard-overview-header p {
+
+    margin: 0;
+
+    color: #a99fbd;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   OVERVIEW GRID
+========================================================= */
+
+.overview-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 16px;
+
+}
+
+
+/* =========================================================
+   OVERVIEW ITEM
+========================================================= */
+
+.overview-item {
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.06);
+
+}
+
+
+.overview-item span {
+
+    display: block;
+
+    color: #9f94b3;
+
+    font-size: 13px;
+
+    margin-bottom: 8px;
+
+}
+
+
+.overview-item strong {
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+}
+
+
+/* =========================================================
+   QUICK ACCESS
+========================================================= */
+
+.dashboard-quick-section {
+
+    margin-top: 5px;
+
+}
+
+
+.dashboard-quick-section h2 {
+
+    margin: 0 0 18px 0;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+}
+
+
+.quick-access-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+
+}
+
+
+.quick-access-card {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding: 22px;
+
+    text-decoration: none;
+
+    background: #171526;
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius: 17px;
+
+    transition: 0.2s ease;
+
+}
+
+
+.quick-access-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(168, 85, 247, 0.35);
+
+    background:
+        rgba(139, 92, 246, 0.07);
+
+}
+
+
+.quick-access-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.quick-access-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    min-width: 48px;
+
+    border-radius: 13px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(139, 92, 246, 0.14);
+
+    color: #b56cff;
+
+    font-size: 21px;
+
+}
+
+
+.quick-access-text h3 {
+
+    margin: 0 0 5px 0;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+}
+
+
+.quick-access-text p {
+
+    margin: 0;
+
+    color: #9f94b3;
+
+    font-size: 13px;
+
+}
+
+
+.quick-access-arrow {
+
+    color: #a855f7;
+
+    font-size: 18px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .dashboard-page .dashboard-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .dashboard-page .dashboard-card:last-child {
+
+        grid-column: span 2;
+
+    }
+
+    .overview-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .quick-access-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .dashboard-page .dashboard-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .dashboard-page .dashboard-card:last-child {
+
+        grid-column: span 1;
+
+    }
+
+    .overview-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .dashboard-welcome {
+
+        padding: 22px;
+
+    }
+
+    .dashboard-welcome h1 {
+
+        font-size: 26px;
+
+    }
+
+}
+
+</style>
+
+
+<div class="app-layout dashboard-page">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             WELCOME
+        ================================================== -->
+
+        <div class="dashboard-welcome">
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <p>
+                Welcome back, {{ session.get("admin_name", "Admin") }}.
+                Here's a quick overview of your Lumora platform.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             KPI CARDS
+        ================================================== -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- TOTAL MOVIES -->
+
+            <div class="dashboard-card">
+
+                <i class="bi bi-film"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_movies }}
+                    </h3>
+
+                    <p>
+                        Total Movies
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- REGISTERED USERS -->
+
+            <div class="dashboard-card">
+
+                <i class="bi bi-people"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_users }}
+                    </h3>
+
+                    <p>
+                        Registered Users
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- WATCHLIST -->
+
+            <div class="dashboard-card">
+
+                <i class="bi bi-heart"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_watchlist }}
+                    </h3>
+
+                    <p>
+                        Watchlist Entries
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- MOVIES WATCHED -->
+
+            <div class="dashboard-card">
+
+                <i class="bi bi-clock-history"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_history }}
+                    </h3>
+
+                    <p>
+                        Movies Watched
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- TRAILER ACTIVITIES -->
+
+            <div class="dashboard-card">
+
+                <i class="bi bi-play-btn"></i>
+
+                <div>
+
+                    <h3>
+                        {{ total_trailer_activity }}
+                    </h3>
+
+                    <p>
+                        Trailer Activities
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             PLATFORM OVERVIEW
+        ================================================== -->
+
+        <div class="dashboard-overview">
+
+
+            <div class="dashboard-overview-header">
+
+                <h2>
+                    📊 Platform Activity Overview
+                </h2>
+
+                <p>
+                    A quick snapshot of how users are interacting
+                    with the Lumora movie platform.
+                </p>
+
+            </div>
+
+
+            <div class="overview-grid">
+
+
+                <!-- MOVIES PER USER -->
+
+                <div class="overview-item">
+
+                    <span>
+                        Movies per User
+                    </span>
+
+                    <strong>
+
+                        {{
+                            "%.1f"|format(
+                                total_movies / total_users
+                                if total_users
+                                else 0
+                            )
+                        }}
+
+                    </strong>
+
+                </div>
+
+
+                <!-- WATCHLIST PER USER -->
+
+                <div class="overview-item">
+
+                    <span>
+                        Watchlist Entries per User
+                    </span>
+
+                    <strong>
+
+                        {{
+                            "%.1f"|format(
+                                total_watchlist / total_users
+                                if total_users
+                                else 0
+                            )
+                        }}
+
+                    </strong>
+
+                </div>
+
+
+                <!-- WATCHES PER USER -->
+
+                <div class="overview-item">
+
+                    <span>
+                        Movies Watched per User
+                    </span>
+
+                    <strong>
+
+                        {{
+                            "%.1f"|format(
+                                total_history / total_users
+                                if total_users
+                                else 0
+                            )
+                        }}
+
+                    </strong>
+
+                </div>
+
+
+                <!-- TRAILER ACTIVITIES PER USER -->
+
+                <div class="overview-item">
+
+                    <span>
+                        Trailer Activities per User
+                    </span>
+
+                    <strong>
+
+                        {{
+                            "%.1f"|format(
+                                total_trailer_activity / total_users
+                                if total_users
+                                else 0
+                            )
+                        }}
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             QUICK ACCESS
+        ================================================== -->
+
+        <div class="dashboard-quick-section">
+
+            <h2>
+                🔎 Explore Analytics
+            </h2>
+
+
+            <div class="quick-access-grid">
+
+
+                <!-- ANALYTICS -->
+
+                <a
+                    href="{{ url_for('admin.admin_analytics') }}"
+                    class="quick-access-card"
+                >
+
+                    <div class="quick-access-left">
+
+                        <div class="quick-access-icon">
+
+                            <i class="bi bi-bar-chart"></i>
+
+                        </div>
+
+                        <div class="quick-access-text">
+
+                            <h3>
+                                Platform Analytics
+                            </h3>
+
+                            <p>
+                                Explore overall platform activity
+                                and Mood Board analytics.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="quick-access-arrow">
+                        →
+                    </div>
+
+                </a>
+
+
+                <!-- TRAILER ANALYTICS -->
+
+                <a
+                    href="{{ url_for('admin.admin_trailer_analytics') }}"
+                    class="quick-access-card"
+                >
+
+                    <div class="quick-access-left">
+
+                        <div class="quick-access-icon">
+
+                            <i class="bi bi-play-btn"></i>
+
+                        </div>
+
+                        <div class="quick-access-text">
+
+                            <h3>
+                                Trailer Analytics
+                            </h3>
+
+                            <p>
+                                Analyze trailer viewing and
+                                interest behaviour.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="quick-access-arrow">
+                        →
+                    </div>
+
+                </a>
+
+
+                <!-- AI INSIGHTS -->
+
+                <a
+                    href="{{ url_for('admin.admin_ai') }}"
+                    class="quick-access-card"
+                >
+
+                    <div class="quick-access-left">
+
+                        <div class="quick-access-icon">
+
+                            <i class="bi bi-stars"></i>
+
+                        </div>
+
+                        <div class="quick-access-text">
+
+                            <h3>
+                                AI Insights
+                            </h3>
+
+                            <p>
+                                Explore recommendation signals
+                                and user behaviour.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="quick-access-arrow">
+                        →
+                    </div>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+{% endblock %}

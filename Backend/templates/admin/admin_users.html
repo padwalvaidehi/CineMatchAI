@@ -1,0 +1,940 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Users
+{% endblock %}
+
+
+{% block content %}
+
+<div class="app-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        {% include "admin/admin_sidebar.html" %}
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    👥 Users
+                </h1>
+
+                <p>
+                    View registered Lumora users and their activity.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SEARCH
+             ================================================= -->
+
+        <div class="admin-search-box">
+
+            <form
+                method="GET"
+                action="{{ url_for('admin.admin_users') }}"
+            >
+
+                <div class="admin-search-input">
+
+                    <i class="bi bi-search"></i>
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="Search by name or email..."
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="admin-search-button"
+                >
+                    <i class="bi bi-search"></i>
+                    Search
+                </button>
+
+
+                {% if search %}
+
+                    <a
+                        href="{{ url_for('admin.admin_users') }}"
+                        class="admin-clear-button"
+                    >
+                        <i class="bi bi-x-circle"></i>
+                        Clear
+                    </a>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             USER COUNT
+             ================================================= -->
+
+        <div class="admin-section-header">
+
+            <div>
+
+                <h2>
+                    Registered Users
+                </h2>
+
+                <p>
+                    Users currently registered on Lumora
+                </p>
+
+            </div>
+
+            <span class="user-count-badge">
+
+                <i class="bi bi-people"></i>
+
+                {{ users|length }} user(s)
+
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             USER TABLE
+             ================================================= -->
+
+        <div class="admin-table-container">
+
+            <table class="admin-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            👤 User
+                        </th>
+
+                        <th>
+                            📧 Email
+                        </th>
+
+                        <th>
+                            📅 Joined
+                        </th>
+
+                        <th>
+                            ❤️ Watchlist
+                        </th>
+
+                        <th>
+                            🎬 Watched
+                        </th>
+
+                        <th>
+                            ▶ Trailer Activity
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for user in users %}
+
+                        <tr>
+
+
+                            <!-- NUMBER -->
+
+                            <td class="user-number">
+
+                                {{ loop.index }}
+
+                            </td>
+
+
+                            <!-- USER -->
+
+                            <td>
+
+                                <div class="admin-user-info">
+
+                                    <div class="admin-user-avatar">
+
+                                        {{ user["name"][0]|upper }}
+
+                                    </div>
+
+
+                                    <div class="admin-user-details">
+
+                                        <strong>
+                                            {{ user["name"] }}
+                                        </strong>
+
+                                        <small>
+                                            User ID: {{ user["id"] }}
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- EMAIL -->
+
+                            <td class="user-email">
+
+                                {{ user["email"] }}
+
+                            </td>
+
+
+                            <!-- JOINED -->
+
+                            <td class="joined-date">
+
+                                {{ user["created_at"] }}
+
+                            </td>
+
+
+                            <!-- WATCHLIST -->
+
+                            <td>
+
+                                <span class="activity-badge watchlist-badge">
+
+                                    <i class="bi bi-heart"></i>
+
+                                    {{ user["watchlist_count"] }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- HISTORY -->
+
+                            <td>
+
+                                <span class="activity-badge watched-badge">
+
+                                    <i class="bi bi-film"></i>
+
+                                    {{ user["history_count"] }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- TRAILER -->
+
+                            <td>
+
+                                <span class="activity-badge trailer-badge">
+
+                                    <i class="bi bi-play-btn"></i>
+
+                                    {{ user["trailer_count"] }}
+
+                                </span>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% else %}
+
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="admin-empty"
+                            >
+
+                                <i class="bi bi-people"></i>
+
+                                <p>
+                                    No users found.
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     USERS PAGE STYLE
+========================================================= -->
+
+<style>
+
+/* =========================================================
+   SEARCH AREA
+========================================================= */
+
+.admin-search-box {
+
+    margin: 25px 0 30px;
+
+}
+
+.admin-search-box form {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.admin-search-input {
+
+    position: relative;
+
+    width: 380px;
+
+}
+
+
+.admin-search-input i {
+
+    position: absolute;
+
+    left: 15px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #a855f7;
+
+    font-size: 17px;
+
+}
+
+
+.admin-search-input input {
+
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 15px 0 45px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(168, 85, 247, 0.25);
+
+    outline: none;
+
+    background: #171526;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    transition: 0.25s ease;
+
+}
+
+
+.admin-search-input input::placeholder {
+
+    color: #817895;
+
+}
+
+
+.admin-search-input input:focus {
+
+    border-color: #a855f7;
+
+    box-shadow:
+        0 0 0 3px rgba(168, 85, 247, 0.12);
+
+}
+
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
+.admin-search-button {
+
+    height: 46px;
+
+    padding: 0 22px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #8b5cf6,
+        #ec4899
+    );
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+
+}
+
+
+.admin-search-button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(168, 85, 247, 0.25);
+
+}
+
+
+/* =========================================================
+   CLEAR BUTTON
+========================================================= */
+
+.admin-clear-button {
+
+    height: 46px;
+
+    padding: 0 18px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background: #171526;
+
+    color: #c9b7e8;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    transition: 0.25s ease;
+
+}
+
+
+.admin-clear-button:hover {
+
+    color: #ffffff;
+
+    border-color: #a855f7;
+
+    background: #211b35;
+
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.admin-section-header {
+
+    margin: 10px 0 18px;
+
+    padding: 18px 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-radius: 14px;
+
+    background: #171526;
+
+    border: 1px solid rgba(168, 85, 247, 0.12);
+
+}
+
+
+.admin-section-header h2 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+}
+
+
+.admin-section-header p {
+
+    margin: 5px 0 0;
+
+    color: #9f95b8;
+
+    font-size: 14px;
+
+}
+
+
+.user-count-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 9px 14px;
+
+    border-radius: 20px;
+
+    background: rgba(168, 85, 247, 0.12);
+
+    border: 1px solid rgba(168, 85, 247, 0.22);
+
+    color: #c084fc;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   TABLE CONTAINER
+========================================================= */
+
+.admin-table-container {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 16px;
+
+    background: #171526;
+
+    border: 1px solid rgba(168, 85, 247, 0.12);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.20);
+
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.admin-table {
+
+    width: 100%;
+
+    min-width: 950px;
+
+    border-collapse: collapse;
+
+}
+
+
+.admin-table thead {
+
+    background: #211b35;
+
+}
+
+
+.admin-table th {
+
+    padding: 18px 16px;
+
+    text-align: left;
+
+    color: #c084fc;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    border-bottom: 1px solid rgba(168, 85, 247, 0.18);
+
+    white-space: nowrap;
+
+}
+
+
+.admin-table td {
+
+    padding: 18px 16px;
+
+    color: #d7cee8;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+}
+
+
+.admin-table tbody tr {
+
+    transition: 0.2s ease;
+
+}
+
+
+.admin-table tbody tr:hover {
+
+    background: rgba(168, 85, 247, 0.07);
+
+}
+
+
+.admin-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   USER NUMBER
+========================================================= */
+
+.user-number {
+
+    color: #8f7aa8 !important;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   USER INFORMATION
+========================================================= */
+
+.admin-user-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.admin-user-avatar {
+
+    width: 40px;
+
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #8b5cf6,
+        #ec4899
+    );
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 12px rgba(168, 85, 247, 0.20);
+
+}
+
+
+.admin-user-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.admin-user-details strong {
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+.admin-user-details small {
+
+    color: #827795;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   EMAIL / DATE
+========================================================= */
+
+.user-email {
+
+    color: #c7bddd !important;
+
+}
+
+
+.joined-date {
+
+    color: #a89dbd !important;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   ACTIVITY BADGES
+========================================================= */
+
+.activity-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    min-width: 52px;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* WATCHLIST */
+
+.watchlist-badge {
+
+    background: rgba(236, 72, 153, 0.10);
+
+    color: #f472b6;
+
+}
+
+
+/* WATCHED */
+
+.watched-badge {
+
+    background: rgba(139, 92, 246, 0.12);
+
+    color: #a78bfa;
+
+}
+
+
+/* TRAILER */
+
+.trailer-badge {
+
+    background: rgba(168, 85, 247, 0.12);
+
+    color: #c084fc;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.admin-empty {
+
+    padding: 60px 20px !important;
+
+    text-align: center;
+
+}
+
+
+.admin-empty i {
+
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #8b5cf6;
+
+    font-size: 40px;
+
+}
+
+
+.admin-empty p {
+
+    margin: 0;
+
+    color: #9f95b8;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .admin-search-input {
+
+        width: 100%;
+
+    }
+
+    .admin-search-box form {
+
+        align-items: stretch;
+
+    }
+
+    .admin-search-button,
+    .admin-clear-button {
+
+        flex: 1;
+
+        justify-content: center;
+
+    }
+
+    .admin-section-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+}
+
+</style>
+
+
+{% endblock %}

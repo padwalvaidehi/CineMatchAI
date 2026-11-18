@@ -1,0 +1,493 @@
+/* ==========================================
+   WATCH HISTORY
+========================================== */
+
+.history-page {
+    padding: 45px 50px;
+    min-height: 100vh;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.history-header {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 40px;
+}
+
+.history-header h1 {
+
+    margin: 0 0 8px;
+
+    font-size: 38px;
+    font-weight: 800;
+
+    color: white;
+}
+
+.history-header p {
+
+    margin: 0;
+
+    color: #aaa;
+    font-size: 15px;
+}
+
+.history-count {
+
+    padding: 10px 18px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    color: #ff69b4;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   HISTORY GRID — 3 MOVIES PER ROW
+========================================== */
+
+.history-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 28px;
+
+    width: 100%;
+}
+
+
+/* ==========================================
+   HISTORY CARD
+========================================== */
+
+.history-card {
+
+    display: flex;
+
+    flex-direction: row;
+
+    min-width: 0;
+
+    height: 270px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    backdrop-filter: blur(12px);
+
+    transition: 0.3s ease;
+}
+
+.history-card:hover {
+
+    transform: translateY(-5px);
+
+    border-color: rgba(255, 79, 163, 0.5);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.35),
+        0 0 25px rgba(255, 79, 163, 0.12);
+}
+
+
+
+/* ==========================================
+   POSTER
+========================================== */
+
+.history-poster-link {
+
+    flex: 0 0 145px;
+
+    width: 145px;
+
+    height: 270px;
+
+    display: block;
+
+    overflow: hidden;
+}
+
+.history-poster {
+
+    width: 145px;
+
+    height: 270px;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: 0.3s ease;
+}
+
+.history-card:hover .history-poster {
+
+    transform: scale(1.04);
+}
+
+.history-no-poster {
+
+    width: 145px;
+
+    height: 270px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #20202d;
+
+    color: #aaa;
+}
+
+
+/* ==========================================
+   MOVIE INFORMATION
+========================================== */
+
+.history-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 22px 18px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.history-title {
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    margin-bottom: 15px;
+
+    line-height: 1.25;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.history-title:hover {
+
+    color: #ff69b4;
+}
+
+
+.history-rating,
+.history-release,
+.history-watched {
+
+    color: #cfcfcf;
+
+    font-size: 13px;
+
+    margin-bottom: 9px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.history-rating {
+
+    color: #f5c518;
+
+    font-weight: 600;
+}
+
+.history-watched {
+
+    color: #ff69b4;
+
+    font-weight: 600;
+}
+
+.history-watched span {
+
+    color: #999;
+
+    font-weight: 400;
+}
+
+
+/* ==========================================
+   REMOVE BUTTON
+========================================== */
+
+.remove-history-form {
+
+    margin-top: 12px;
+}
+
+.remove-history-btn {
+
+    padding: 9px 11px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background: rgba(255, 255, 255, 0.06);
+
+    color: #ddd;
+
+    cursor: pointer;
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 12px;
+
+    transition: 0.25s ease;
+}
+
+.remove-history-btn:hover {
+
+    background: rgba(255, 70, 120, 0.15);
+
+    border-color: #ff4fa3;
+
+    color: #ff69b4;
+}
+
+/* ==========================================
+   EMPTY HISTORY
+========================================== */
+
+.empty-history {
+
+    min-height: 500px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding: 50px;
+}
+
+.empty-history-icon {
+
+    font-size: 70px;
+
+    margin-bottom: 20px;
+
+    opacity: 0.8;
+}
+
+.empty-history h2 {
+
+    color: white;
+
+    font-size: 28px;
+
+    margin-bottom: 10px;
+}
+
+.empty-history p {
+
+    color: #aaa;
+
+    margin-bottom: 25px;
+}
+
+
+/* ==========================================
+   BROWSE BUTTON
+========================================== */
+
+.browse-movies-btn {
+
+    display: inline-block;
+
+    padding: 13px 25px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4fa3,
+            #8b4de8
+        );
+
+    color: white;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 8px 25px rgba(255, 79, 163, 0.25);
+
+    transition: 0.25s ease;
+}
+
+.browse-movies-btn:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px rgba(255, 79, 163, 0.4);
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1300px) {
+
+    .history-grid {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .history-page {
+
+        padding: 30px 20px;
+
+    }
+
+    .history-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .history-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+    .history-card {
+
+        height: 240px;
+
+    }
+
+    .history-poster-link {
+
+        flex: 0 0 125px;
+
+        width: 125px;
+
+        height: 240px;
+
+    }
+
+    .history-poster,
+    .history-no-poster {
+
+        width: 125px;
+
+        height: 240px;
+
+    }
+
+    .history-info {
+
+        padding: 18px 14px;
+
+    }
+
+}
+
+/* ==========================================
+   HISTORY REMOVE TOAST
+========================================== */
+
+.history-toast {
+
+    position: fixed;
+
+    top: 90px;
+    right: 30px;
+
+    z-index: 9999;
+
+    padding: 16px 24px;
+
+    border-radius: 14px;
+
+    background: rgba(35, 20, 45, 0.95);
+
+    border: 1px solid #ff4fa3;
+
+    color: white;
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(255, 79, 163, 0.2);
+
+    transition: opacity 0.5s ease;
+}

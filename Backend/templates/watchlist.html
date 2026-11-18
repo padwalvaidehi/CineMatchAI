@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block title %}
+Watchlist
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================= -->
+<!-- REMOVE NOTIFICATION -->
+<!-- ============================= -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="watchlist-toast">
+                🗑️ {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+<div class="dashboard">
+
+    <!-- ============================= -->
+    <!-- SIDEBAR -->
+    <!-- ============================= -->
+
+    <aside class="sidebar">
+        {% include "sidebar.html" %}
+    </aside>
+
+
+    <!-- ============================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================= -->
+
+    <main class="dashboard-content">
+
+        <h1>❤️ My Watchlist</h1>
+
+
+        {% if watchlist_movies %}
+
+            <p class="watchlist-subtitle">
+                Movies you've saved to watch later.
+            </p>
+
+
+            <!-- ============================= -->
+            <!-- WATCHLIST GRID -->
+            <!-- ============================= -->
+
+            <div class="watchlist-grid">
+
+                {% for movie in watchlist_movies %}
+
+                    <div class="watchlist-card">
+
+
+                        <!-- ============================= -->
+                        <!-- MOVIE CLICK AREA -->
+                        <!-- ============================= -->
+
+                        <a
+                            href="{{ url_for('movie_details', movie_id=movie.id) }}"
+                            class="watchlist-movie-link"
+                        >
+
+                            <!-- POSTER -->
+
+                            <div class="watchlist-poster">
+
+                                {% if movie.poster_url %}
+
+                                    <img
+                                        src="{{ movie.poster_url }}"
+                                        alt="{{ movie.title }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="no-poster">
+                                        🎬
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- MOVIE INFORMATION -->
+
+                            <div class="watchlist-info">
+
+                                <h3>
+                                    {{ movie.title }}
+                                </h3>
+
+
+                                <!-- GENRES -->
+
+                                {% if movie.genres %}
+
+                                    <p class="watchlist-genre">
+
+                                        {% if movie.genres is string %}
+
+                                            {{ movie.genres }}
+
+                                        {% else %}
+
+                                            {% for genre in movie.genres %}
+
+                                                {{ genre.name }}
+
+                                                {% if not loop.last %}
+                                                    ,
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        {% endif %}
+
+                                    </p>
+
+                                {% endif %}
+
+
+                                <!-- RATING + YEAR -->
+
+                                <div class="watchlist-meta">
+
+                                    <span>
+                                        ⭐
+                                        {{ "%.1f"|format(
+                                            movie.vote_average
+                                            or movie.rating
+                                            or 0
+                                        ) }}
+                                    </span>
+
+                                    <span>
+                                        {{
+                                            movie.release_date[:4]
+                                            if movie.release_date
+                                            else "N/A"
+                                        }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+
+                        <!-- ============================= -->
+                        <!-- REMOVE BUTTON -->
+                        <!-- ============================= -->
+
+                       <div class="remove-watchlist-form">
+
+    <button
+        type="button"
+        class="remove-watchlist-btn"
+        data-remove-url="{{ url_for(
+            'remove_from_watchlist',
+            movie_id=movie.id
+        ) }}"
+    >
+        🗑️ Remove
+    </button>
+
+</div>
+
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- ============================= -->
+            <!-- EMPTY WATCHLIST -->
+            <!-- ============================= -->
+
+            <div class="empty-watchlist">
+
+                <div class="empty-watchlist-icon">
+                    ❤️
+                </div>
+
+                <h2>
+                    Your Watchlist is Empty
+                </h2>
+
+                <p>
+                    Save movies you want to watch later and they'll appear here.
+                </p>
+
+                <a
+                    href="{{ url_for('movies') }}"
+                    class="explore-watchlist-btn"
+                >
+                    🎬 Explore Movies
+                </a>
+
+            </div>
+
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+
+<!-- ============================= -->
+<!-- AUTO-HIDE NOTIFICATION -->
+<!-- ============================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const removeButtons = document.querySelectorAll(
+        ".remove-watchlist-btn"
+    );
+
+
+    removeButtons.forEach(function (button) {
+
+        button.addEventListener("click", async function () {
+
+            const removeUrl = button.dataset.removeUrl;
+
+            const card = button.closest(
+                ".watchlist-card"
+            );
+
+
+            // Prevent double clicking
+            button.disabled = true;
+
+            button.textContent = "Removing...";
+
+
+            try {
+
+                const response = await fetch(
+                    removeUrl,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server returned " +
+                        response.status
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Watchlist remove response:",
+                    data
+                );
+
+
+                if (data.success) {
+
+
+                    // --------------------------------
+                    // REMOVE CARD
+                    // --------------------------------
+
+                    if (card) {
+
+                        card.style.transition =
+                            "opacity 0.3s ease, transform 0.3s ease";
+
+                        card.style.opacity = "0";
+
+                        card.style.transform =
+                            "scale(0.95)";
+
+
+                        setTimeout(function () {
+
+                            card.remove();
+
+
+                            // --------------------------------
+                            // CHECK REMAINING MOVIES
+                            // --------------------------------
+
+                            const remainingCards =
+                                document.querySelectorAll(
+                                    ".watchlist-card"
+                                );
+
+
+                            if (
+                                remainingCards.length === 0
+                            ) {
+
+                                setTimeout(function () {
+
+                                    location.reload();
+
+                                }, 1200);
+
+                            }
+
+                        }, 300);
+
+                    }
+
+
+                    // --------------------------------
+                    // SHOW MESSAGE
+                    // --------------------------------
+
+                    showWatchlistToast(
+                        "🗑️ Movie removed from your Watchlist."
+                    );
+
+
+                } else {
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "🗑️ Remove";
+
+
+                    showWatchlistToast(
+                        "Could not remove the movie."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Watchlist Remove Error:",
+                    error
+                );
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "🗑️ Remove";
+
+
+                showWatchlistToast(
+                    "Something went wrong while removing the movie."
+                );
+
+            }
+
+        });
+
+    });
+
+
+    // ==========================================
+    // WATCHLIST TOAST
+    // ==========================================
+
+    function showWatchlistToast(message) {
+
+        const oldToast =
+            document.querySelector(
+                ".watchlist-toast"
+            );
+
+
+        if (oldToast) {
+            oldToast.remove();
+        }
+
+
+        const toast =
+            document.createElement("div");
+
+
+        toast.className =
+            "watchlist-toast";
+
+
+        toast.textContent =
+            message;
+
+
+        document.body.appendChild(
+            toast
+        );
+
+
+        // Small delay so CSS transition works
+        setTimeout(function () {
+
+            toast.classList.add(
+                "show"
+            );
+
+        }, 10);
+
+
+        // Remove after 3 seconds
+        setTimeout(function () {
+
+            toast.style.opacity =
+                "0";
+
+
+            setTimeout(function () {
+
+                toast.remove();
+
+            }, 500);
+
+        }, 3000);
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

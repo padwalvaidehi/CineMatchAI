@@ -1,0 +1,70 @@
+{% for movie in movies %}
+
+<a
+    href="{{ url_for('movie_details', movie_id=movie.tmdb_id or movie.id) }}"
+    class="movie-link"
+>
+
+    <div class="movie-card">
+
+        <!-- POSTER -->
+        {% if movie.poster_url %}
+
+            <img
+                src="{{ movie.poster_url }}"
+                alt="{{ movie.title }}"
+            >
+
+        {% else %}
+
+            <div class="no-poster">
+                🎬
+            </div>
+
+        {% endif %}
+
+
+        <!-- INFORMATION -->
+        <div class="movie-card-content">
+
+            <h3>
+                {{ movie.title }}
+            </h3>
+
+            <p class="genre">
+                {{ movie.genres if movie.genres else "Movie" }}
+            </p>
+
+            <div class="movie-info">
+
+               <p class="rating">
+    ⭐
+    {{
+        "%.1f"|format(
+            movie.vote_average
+            if movie.vote_average is defined and movie.vote_average
+            else (
+                movie.rating
+                if movie.rating is defined and movie.rating
+                else 0
+            )
+        )
+    }}
+</p>
+                <p class="year">
+                    {{
+                        movie.release_date[:4]
+                        if movie.release_date
+                        else "N/A"
+                    }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</a>
+
+{% endfor %}

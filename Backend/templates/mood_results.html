@@ -1,0 +1,2245 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ mood_name }} - Lumora
+{% endblock %}
+
+{% block content %}
+
+<div class="mood-results-page">
+
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
+
+    <div class="top-row">
+
+        <a
+            href="{{ url_for('ai_picks') }}"
+            class="back-button"
+        >
+            ← Back to Mood Board
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="hero-row">
+
+        <div class="mood-result-header">
+
+            <span class="mood-result-eyebrow">
+                LUMORA • AI PICKS
+            </span>
+
+            <h1>
+                {{ mood_name }}
+            </h1>
+
+            <p>
+                {{ mood_description }}
+            </p>
+
+        </div>
+
+
+        <!-- WHY THESE MOVIES -->
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <h3>
+                    Why these movies?
+                </h3>
+
+                <p>
+                    Based on your trailer interests,
+                    watch history, watchlist and the
+                    movie languages you engage with.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SELECTED VIBE + STATS
+    ====================================================== -->
+
+    <div class="selected-mood-card {{ mood }}">
+
+        <div class="selected-mood-glow"></div>
+
+
+        <!-- ICON -->
+
+        <div class="selected-mood-icon">
+
+            <span>
+                {{ mood_icon }}
+            </span>
+
+        </div>
+
+
+        <!-- MOOD -->
+
+        <div class="selected-mood-content">
+
+            <span class="selected-label">
+                YOUR SELECTED VIBE
+            </span>
+
+            <h2>
+                {{ mood_name }}
+            </h2>
+
+            <p>
+                {{ mood_description }}
+            </p>
+
+        </div>
+
+
+        <!-- STATS -->
+
+        <div class="mood-stats">
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    ▣
+                </div>
+
+                <strong>
+                    {{ trailer_count }}
+                </strong>
+
+                <span>
+                    Trailers Watched
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    ☆
+                </div>
+
+                <strong>
+                    {{ highly_interested_count }}
+                </strong>
+
+                <span>
+                    Highly Interested
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    ◴
+                </div>
+
+                <strong>
+                    {{ history_count }}
+                </strong>
+
+                <span>
+                    In Watch History
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    ♡
+                </div>
+
+                <strong>
+                    {{ watchlist_count }}
+                </strong>
+
+                <span>
+                    In Watchlist
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MOVIE SECTION
+    ====================================================== -->
+
+    <section class="movies-section">
+
+        <div class="section-top">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    MATCHING YOUR VIBE
+                </span>
+
+                <h2>
+                    Movies for your mood
+                </h2>
+
+                <p>
+                    Personalized from your mood,
+                    interests and movie languages.
+                </p>
+
+            </div>
+
+
+            <!-- NEW PICKS -->
+
+            <button
+                type="button"
+                class="new-picks-button"
+                onclick="getNewPicks()"
+            >
+                ↻
+                New Picks
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             LANGUAGE WORLDS
+        ================================================== -->
+
+        <div class="movie-worlds">
+
+            <span class="world-label">
+                YOUR MOVIE WORLDS
+            </span>
+
+
+            {% if language_worlds %}
+
+                {% for language in language_worlds %}
+
+                    <span class="language-pill">
+
+                        {{ language.flag }}
+                        {{ language.name }}
+
+                    </span>
+
+                {% endfor %}
+
+            {% else %}
+
+                <span class="language-pill">
+                    🌎 Global
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             CAROUSEL
+        ================================================== -->
+
+        {% if mood_movies %}
+
+        <div class="carousel-wrapper">
+
+            <!-- LEFT ARROW -->
+
+            <button
+                class="carousel-arrow left"
+                id="prevButton"
+                onclick="scrollMovies(-1)"
+                aria-label="Previous movies"
+            >
+                ‹
+            </button>
+
+
+            <!-- MOVIE TRACK -->
+
+            <div
+                class="movie-carousel"
+                id="movieCarousel"
+            >
+
+                {% for movie in mood_movies %}
+
+                    <article class="movie-card">
+
+                        <!-- POSTER -->
+
+                        <a
+                            href="{{ url_for(
+                                'movie_details',
+                                movie_id=movie.id
+                            ) }}"
+                            class="movie-poster-link"
+                        >
+
+                            {% if movie.poster_url %}
+
+                                <img
+                                    src="{{ movie.poster_url }}"
+                                    alt="{{ movie.title }}"
+                                    class="movie-poster"
+                                    loading="lazy"
+                                >
+
+                            {% else %}
+
+                                <div class="no-poster">
+                                    🎬
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- LANGUAGE BADGE -->
+
+                            {% if movie.recommendation_language %}
+
+                                {% if movie.recommendation_language == "hi" %}
+
+                                    <span class="movie-language">
+                                        🇮🇳 Bollywood
+                                    </span>
+
+                                {% elif movie.recommendation_language == "en" %}
+
+                                    <span class="movie-language">
+                                        🇺🇸 Hollywood
+                                    </span>
+
+                                {% elif movie.recommendation_language == "ko" %}
+
+                                    <span class="movie-language">
+                                        🇰🇷 Korean
+                                    </span>
+
+                                {% elif movie.recommendation_language == "ja" %}
+
+                                    <span class="movie-language">
+                                        🇯🇵 Anime
+                                    </span>
+
+                                {% elif movie.recommendation_language == "th" %}
+
+                                    <span class="movie-language">
+                                        🇹🇭 Thai
+                                    </span>
+
+                                {% elif movie.recommendation_language == "zh" %}
+
+                                    <span class="movie-language">
+                                        🇨🇳 Chinese
+                                    </span>
+
+                                {% elif movie.recommendation_language == "es" %}
+
+                                    <span class="movie-language">
+                                        🇪🇸 Spanish
+                                    </span>
+
+                                {% elif movie.recommendation_language == "fr" %}
+
+                                    <span class="movie-language">
+                                        🇫🇷 French
+                                    </span>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <!-- =================================================
+                             MOVIE INFORMATION
+                        ================================================== -->
+
+                        <div class="movie-info">
+
+                            <h3>
+                                {{ movie.title }}
+                            </h3>
+
+
+                            <!-- RATING + YEAR -->
+
+                            <div class="movie-meta">
+
+                                <span class="movie-rating">
+                                    ⭐
+                                    {{ "%.1f"|format(
+                                        movie.vote_average or 0
+                                    ) }}
+                                </span>
+
+
+                                {% if movie.release_date %}
+
+                                    <span class="movie-year">
+                                        {{ movie.release_date[:4] }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- GENRES -->
+
+                            {% if movie.genres %}
+
+                                <p class="movie-genres">
+                                    {{ movie.genres }}
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- RIGHT ARROW -->
+
+            <button
+                class="carousel-arrow right"
+                id="nextButton"
+                onclick="scrollMovies(1)"
+                aria-label="Next movies"
+            >
+                ›
+            </button>
+
+        </div>
+
+
+    
+
+
+        {% else %}
+
+            <div class="no-mood-results">
+
+                <div>
+                    ◈
+                </div>
+
+                <h2>
+                    No perfect matches yet.
+                </h2>
+
+                <p>
+                    Try another mood and let Lumora
+                    find something better for you.
+                </p>
+
+                <a href="{{ url_for('ai_picks') }}">
+                    Explore Other Moods
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.mood-results-page {
+
+    width: 100%;
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding: 28px 55px 80px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.top-row {
+
+    margin-bottom: 30px;
+
+}
+
+
+.back-button {
+
+    display: inline-flex;
+
+    color: #a895b7;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    transition:
+        color .25s ease,
+        transform .25s ease;
+
+}
+
+
+.back-button:hover {
+
+    color: #ffffff;
+
+    transform: translateX(-4px);
+
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 35px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.mood-result-header {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.mood-result-eyebrow {
+
+    display: block;
+
+    color: #c779ff;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.mood-result-header h1 {
+
+    margin: 0 0 8px;
+
+    font-size: 50px;
+
+    line-height: 1.05;
+
+    color: #ffffff;
+
+    letter-spacing: -1.5px;
+
+}
+
+
+.mood-result-header p {
+
+    margin: 0;
+
+    color: #9d91ad;
+
+    font-size: 17px;
+
+}
+
+
+/* =========================================================
+   WHY CARD
+========================================================= */
+
+.why-card {
+
+    width: 410px;
+
+    min-width: 410px;
+
+    display: flex;
+
+    gap: 16px;
+
+    padding: 22px 24px;
+
+    box-sizing: border-box;
+
+    border-radius: 15px;
+
+    border: 1px solid
+        rgba(255,255,255,.09);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.018)
+        );
+
+    box-shadow:
+        0 10px 35px
+        rgba(0,0,0,.25);
+
+}
+
+
+.why-icon {
+
+    width: 40px;
+
+    height: 40px;
+
+    min-width: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    color: #ff78dc;
+
+    background:
+        rgba(225,80,255,.08);
+
+    border:
+        1px solid
+        rgba(225,80,255,.20);
+
+    box-shadow:
+        0 0 20px
+        rgba(225,80,255,.15);
+
+}
+
+
+.why-card h3 {
+
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    line-height: 1.3;
+
+}
+
+
+.why-card p {
+
+    margin: 0;
+
+    color: #9f93ad;
+
+    font-size: 14px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   SELECTED MOOD CARD
+========================================================= */
+
+.selected-mood-card {
+
+    position: relative;
+
+    min-height: 145px;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.09);
+
+    background:
+        linear-gradient(
+            110deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.018)
+        );
+
+    margin-bottom: 55px;
+
+    box-shadow:
+        inset 0 0 40px
+        rgba(255,255,255,.01);
+
+}
+
+
+.selected-mood-glow {
+
+    position: absolute;
+
+    right: -100px;
+
+    top: -130px;
+
+    width: 380px;
+
+    height: 380px;
+
+    border-radius: 50%;
+
+    filter: blur(90px);
+
+    opacity: .20;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   MOOD ICON
+========================================================= */
+
+.selected-mood-icon {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 70px;
+
+    height: 70px;
+
+    min-width: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-left: 30px;
+
+    margin-right: 28px;
+
+    border-radius: 19px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+}
+
+
+.selected-mood-icon span {
+
+    font-size: 37px;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 6px #ffffff,
+        0 0 15px #ff52c8,
+        0 0 30px #ff52c8;
+
+    animation:
+        neonPulse 2s ease-in-out infinite;
+
+}
+
+
+@keyframes neonPulse {
+
+    0%, 100% {
+
+        text-shadow:
+            0 0 5px #ffffff,
+            0 0 14px #ff52c8,
+            0 0 28px #ff52c8;
+
+    }
+
+    50% {
+
+        text-shadow:
+            0 0 7px #ffffff,
+            0 0 20px #ff52c8,
+            0 0 42px #ff52c8;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOOD CONTENT
+========================================================= */
+
+.selected-mood-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    min-width: 300px;
+
+}
+
+
+.selected-label {
+
+    display: block;
+
+    color: #766b80;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    font-weight: 800;
+
+    margin-bottom: 6px;
+
+}
+
+
+.selected-mood-content h2 {
+
+    margin: 0 0 6px;
+
+    color: #ffffff;
+
+    font-size: 28px;
+
+}
+
+
+.selected-mood-content p {
+
+    margin: 0;
+
+    color: #9d91a8;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.mood-stats {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-left: auto;
+
+    margin-right: 25px;
+
+    height: 105px;
+
+    display: flex;
+
+    align-items: stretch;
+
+}
+
+
+.stat {
+
+    min-width: 160px;
+
+    padding: 0 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    border-left:
+        1px solid
+        rgba(255,255,255,.10);
+
+}
+
+
+.stat-icon {
+
+    color: #dc72ff;
+
+    font-size: 23px;
+
+    margin-bottom: 6px;
+
+    text-shadow:
+        0 0 14px
+        rgba(220,100,255,.8);
+
+}
+
+
+.stat strong {
+
+    color: #ffffff;
+
+    font-size: 31px;
+
+    font-weight: 700;
+
+    line-height: 1.1;
+
+}
+
+
+.stat span {
+
+    color: #a99bad;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    margin-top: 7px;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   MOOD COLORS
+========================================================= */
+
+.cozy .selected-mood-glow {
+    background: #8b5cf6;
+}
+
+.emotional .selected-mood-glow {
+    background: #ec4899;
+}
+
+.adrenaline .selected-mood-glow {
+    background: #f97316;
+}
+
+.mystery .selected-mood-glow {
+    background: #6366f1;
+}
+
+.horror .selected-mood-glow {
+    background: #ef4444;
+}
+
+.fantasy .selected-mood-glow {
+    background: #a855f7;
+}
+
+.romance .selected-mood-glow {
+    background: #f43f5e;
+}
+
+.thoughtful .selected-mood-glow {
+    background: #06b6d4;
+}
+
+.fun .selected-mood-glow {
+    background: #eab308;
+}
+
+.discover .selected-mood-glow {
+    background: #14b8a6;
+}
+
+
+/* =========================================================
+   MOVIE SECTION
+========================================================= */
+
+.movies-section {
+
+    width: 100%;
+
+}
+
+
+.section-top {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+}
+
+
+.section-eyebrow {
+
+    display: block;
+
+    color: #a77bd4;
+
+    font-size: 11px;
+
+    letter-spacing: 2.5px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+
+}
+
+
+.section-top h2 {
+
+    margin: 0 0 5px;
+
+    color: #ffffff;
+
+    font-size: 32px;
+
+}
+
+
+.section-top p {
+
+    margin: 0;
+
+    color: #8f849b;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================================
+   NEW PICKS
+========================================================= */
+
+.new-picks-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 13px 18px;
+
+    border-radius: 11px;
+
+    border:
+        1px solid
+        rgba(235,70,190,.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(180,30,150,.13),
+            rgba(100,30,130,.08)
+        );
+
+    color: #f1dfff;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+
+}
+
+
+.new-picks-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(255,100,210,.65);
+
+    box-shadow:
+        0 0 25px
+        rgba(220,60,200,.15);
+
+}
+
+
+/* =========================================================
+   MOVIE WORLDS
+========================================================= */
+
+.movie-worlds {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.world-label {
+
+    color: #70657b;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    font-weight: 800;
+
+    margin-right: 5px;
+
+}
+
+
+.language-pill {
+
+    padding: 7px 13px;
+
+    border-radius: 20px;
+
+    color: #bcaac8;
+
+    font-size: 12px;
+
+    background:
+        rgba(255,255,255,.035);
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+}
+
+
+/* =========================================================
+   CAROUSEL WRAPPER
+========================================================= */
+
+.carousel-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   MOVIE CAROUSEL
+========================================================= */
+
+.movie-carousel {
+
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    flex-wrap: nowrap !important;
+
+    align-items: stretch !important;
+
+    gap: 18px;
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    scroll-behavior: smooth;
+
+    scrollbar-width: none;
+
+    padding: 4px 2px 15px;
+
+    box-sizing: border-box;
+
+}
+
+
+.movie-carousel::-webkit-scrollbar {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   MOVIE CARD
+   IMPORTANT FIX
+========================================================= */
+
+.movie-card {
+
+    /* CARD SIZE */
+
+    flex: 0 0 230px !important;
+
+    width: 230px !important;
+
+    min-width: 230px !important;
+
+    max-width: 230px !important;
+
+
+    /* CARD HEIGHT */
+
+    height: 500px !important;
+
+    min-height: 500px !important;
+
+    max-height: 500px !important;
+
+
+    /* CARD STRUCTURE */
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    flex-wrap: nowrap !important;
+
+
+    /* PREVENT GRID COLLAPSE */
+
+    grid-template-columns: none !important;
+
+    grid-template-rows: none !important;
+
+    grid-column: auto !important;
+
+    grid-row: auto !important;
+
+
+    flex-shrink: 0 !important;
+
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    border-radius: 15px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    background:
+        rgba(255,255,255,.025);
+
+    transition:
+        transform .28s ease,
+        border-color .28s ease,
+        box-shadow .28s ease;
+
+}
+
+
+/* =========================================================
+   CARD HOVER
+========================================================= */
+
+.movie-card:hover {
+
+    transform:
+        translateY(-6px);
+
+    border-color:
+        rgba(221,90,255,.55);
+
+    box-shadow:
+
+        0 18px 40px
+        rgba(0,0,0,.40),
+
+        0 0 25px
+        rgba(190,70,255,.08);
+
+}
+
+
+/* =========================================================
+   POSTER
+========================================================= */
+
+.movie-poster-link {
+
+    position: relative;
+
+    display: block !important;
+
+    width: 100% !important;
+
+    min-width: 100% !important;
+
+    max-width: 100% !important;
+
+    height: 320px !important;
+
+    min-height: 320px !important;
+
+    max-height: 320px !important;
+
+    flex: 0 0 320px !important;
+
+    flex-shrink: 0 !important;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    background:
+        #120a18;
+
+}
+
+
+.movie-poster {
+
+    display: block !important;
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    max-width: 100% !important;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    transition:
+        transform .4s ease;
+
+}
+
+
+.movie-card:hover .movie-poster {
+
+    transform:
+        scale(1.045);
+
+}
+
+
+/* =========================================================
+   NO POSTER
+========================================================= */
+
+.no-poster {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #a77bd4;
+
+    font-size: 40px;
+
+}
+
+
+/* =========================================================
+   LANGUAGE BADGE
+========================================================= */
+
+.movie-language {
+
+    position: absolute;
+
+    left: 10px;
+
+    bottom: 10px;
+
+    z-index: 5;
+
+    display: inline-flex !important;
+
+    align-items: center;
+
+    width: auto !important;
+
+    min-width: auto !important;
+
+    max-width: calc(100% - 20px);
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    background:
+        rgba(10,5,15,.88);
+
+    border:
+        1px solid
+        rgba(255,255,255,.14);
+
+    backdrop-filter:
+        blur(8px);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   MOVIE INFO
+   IMPORTANT FIX
+========================================================= */
+
+.movie-info {
+
+    /* FORCE BLOCK */
+
+    display: block !important;
+
+
+    /* PREVENT GRID/FLEX COLUMN COLLAPSE */
+
+    grid-column: auto !important;
+
+    grid-row: auto !important;
+
+    flex: 1 1 auto !important;
+
+    flex-shrink: 0 !important;
+
+
+    /* WIDTH */
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+
+
+    /* SPACING */
+
+    margin: 0 !important;
+
+    padding:
+        17px 15px 16px !important;
+
+
+    /* BOX */
+
+    box-sizing: border-box !important;
+
+    overflow: hidden !important;
+
+}
+
+
+/* =========================================================
+   MOVIE TITLE
+========================================================= */
+
+.movie-info h3 {
+
+    /* FORCE FULL WIDTH */
+
+    display: block !important;
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+
+
+    /* RESET POSSIBLE GLOBAL RULES */
+
+    position: static !important;
+
+    float: none !important;
+
+    margin:
+        0 0 10px !important;
+
+    padding: 0 !important;
+
+
+    /* TEXT */
+
+    color: #ffffff;
+
+    font-size: 18px !important;
+
+    font-weight: 700;
+
+    line-height: 1.35;
+
+
+    /* THIS PREVENTS ONE-CHARACTER WRAPPING */
+
+    white-space: normal !important;
+
+    word-break: normal !important;
+
+    overflow-wrap: normal !important;
+
+
+    /* LIMIT TO 3 LINES */
+
+    height: 73px !important;
+
+    min-height: 73px !important;
+
+    max-height: 73px !important;
+
+
+    overflow: hidden !important;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   RATING + YEAR
+========================================================= */
+
+.movie-meta {
+
+    /* ONE HORIZONTAL ROW */
+
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    flex-wrap: nowrap !important;
+
+    align-items: center !important;
+
+    justify-content: flex-start !important;
+
+
+    /* FULL WIDTH */
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+
+
+    /* SPACING */
+
+    margin:
+        0 !important;
+
+    padding: 0 !important;
+
+    gap: 20px !important;
+
+
+    /* TEXT */
+
+    color: #a69aaa;
+
+    font-size: 14px !important;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+
+    white-space: nowrap !important;
+
+    box-sizing: border-box;
+
+}
+
+
+/* META ITEMS */
+
+.movie-meta span {
+
+    display: inline-flex !important;
+
+    flex:
+        0 0 auto !important;
+
+    align-items: center !important;
+
+    justify-content: flex-start !important;
+
+
+    width: auto !important;
+
+    min-width: auto !important;
+
+    max-width: none !important;
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+    white-space: nowrap !important;
+
+    word-break: normal !important;
+
+    overflow: visible !important;
+
+}
+
+
+/* RATING */
+
+.movie-meta .movie-rating {
+
+    color: #f0d7ff;
+
+    font-size: 15px !important;
+
+    font-weight: 700;
+
+}
+
+
+/* YEAR */
+
+.movie-meta .movie-year {
+
+    color: #a69aaa;
+
+    font-size: 14px !important;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   GENRES
+========================================================= */
+
+.movie-info .movie-genres {
+
+    display: block !important;
+
+
+    /* FULL WIDTH */
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+
+
+    margin:
+        15px 0 0 !important;
+
+    padding: 0 !important;
+
+
+    /* TEXT */
+
+    color: #a69aaa;
+
+    font-size: 14px !important;
+
+    font-weight: 500;
+
+    line-height: 1.5;
+
+
+    /* NORMAL WRAPPING */
+
+    white-space: normal !important;
+
+    word-break: normal !important;
+
+    overflow-wrap: break-word !important;
+
+
+    /* LIMIT HEIGHT */
+
+    height: 42px !important;
+
+    max-height: 42px !important;
+
+
+    overflow: hidden !important;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   CAROUSEL ARROWS
+========================================================= */
+
+.carousel-arrow {
+
+    position: absolute;
+
+    top: 42%;
+
+    transform:
+        translateY(-50%);
+
+    z-index: 10;
+
+    width: 43px;
+
+    height: 43px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255,255,255,.16);
+
+    background:
+        rgba(17,9,24,.90);
+
+    backdrop-filter:
+        blur(12px);
+
+    color: #ffffff;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+
+}
+
+
+.carousel-arrow.left {
+
+    left: -20px;
+
+}
+
+
+.carousel-arrow.right {
+
+    right: -20px;
+
+}
+
+
+.carousel-arrow:hover:not(:disabled) {
+
+    transform:
+        translateY(-50%)
+        scale(1.08);
+
+    border-color:
+        rgba(224,90,255,.65);
+
+    box-shadow:
+        0 0 25px
+        rgba(220,80,255,.20);
+
+}
+
+
+.carousel-arrow:disabled {
+
+    opacity: .18;
+
+    cursor: default;
+
+    pointer-events: none;
+
+    box-shadow: none;
+
+}
+
+
+/* =========================================================
+   CAROUSEL INDICATOR
+========================================================= */
+
+.carousel-indicator {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    margin-top: 4px;
+
+    color: #8c8095;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.no-mood-results {
+
+    text-align: center;
+
+    padding:
+        80px 20px;
+
+}
+
+
+.no-mood-results > div {
+
+    font-size: 55px;
+
+    color: #c084fc;
+
+    margin-bottom: 15px;
+
+}
+
+
+.no-mood-results h2 {
+
+    color: #ffffff;
+
+}
+
+
+.no-mood-results p {
+
+    color: #999;
+
+}
+
+
+.no-mood-results a {
+
+    display: inline-block;
+
+    padding:
+        11px 18px;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+
+    background:
+        rgba(192,132,252,.12);
+
+    border:
+        1px solid
+        rgba(192,132,252,.30);
+
+    text-decoration: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .mood-stats {
+
+        display: none;
+
+    }
+
+    .why-card {
+
+        width: 300px;
+
+        min-width: 300px;
+
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .mood-results-page {
+
+        padding:
+            25px 20px 60px;
+
+    }
+
+
+    .hero-row {
+
+        flex-direction: column;
+
+    }
+
+
+    .why-card {
+
+        width: 100%;
+
+        min-width: 0;
+
+    }
+
+
+    .mood-result-header h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    .selected-mood-card {
+
+        padding:
+            20px;
+
+    }
+
+
+    .selected-mood-icon {
+
+        margin-left: 0;
+
+    }
+
+
+    /* TABLET CARD */
+
+    .movie-card {
+
+        flex:
+            0 0 205px !important;
+
+        width:
+            205px !important;
+
+        min-width:
+            205px !important;
+
+        max-width:
+            205px !important;
+
+        height:
+            460px !important;
+
+        min-height:
+            460px !important;
+
+        max-height:
+            460px !important;
+
+    }
+
+
+    .movie-poster-link {
+
+        height:
+            285px !important;
+
+        min-height:
+            285px !important;
+
+        max-height:
+            285px !important;
+
+        flex-basis:
+            285px !important;
+
+    }
+
+
+    .movie-info h3 {
+
+        font-size:
+            17px !important;
+
+        height:
+            68px !important;
+
+        min-height:
+            68px !important;
+
+        max-height:
+            68px !important;
+
+    }
+
+
+    .movie-info .movie-genres {
+
+        font-size:
+            13px !important;
+
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .selected-mood-content {
+
+        min-width: 0;
+
+    }
+
+
+    .selected-mood-content h2 {
+
+        font-size: 20px;
+
+    }
+
+
+    .selected-mood-content p {
+
+        font-size: 11px;
+
+    }
+
+
+    .section-top {
+
+        align-items:
+            flex-start;
+
+        gap: 15px;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    /* MOBILE CARD */
+
+    .movie-card {
+
+        flex:
+            0 0 185px !important;
+
+        width:
+            185px !important;
+
+        min-width:
+            185px !important;
+
+        max-width:
+            185px !important;
+
+        height:
+            430px !important;
+
+        min-height:
+            430px !important;
+
+        max-height:
+            430px !important;
+
+    }
+
+
+    .movie-poster-link {
+
+        height:
+            260px !important;
+
+        min-height:
+            260px !important;
+
+        max-height:
+            260px !important;
+
+        flex-basis:
+            260px !important;
+
+    }
+
+
+    .movie-info {
+
+        padding:
+            14px 12px 15px !important;
+
+    }
+
+
+    .movie-info h3 {
+
+        font-size:
+            16px !important;
+
+        line-height:
+            1.35;
+
+        height:
+            65px !important;
+
+        min-height:
+            65px !important;
+
+        max-height:
+            65px !important;
+
+    }
+
+
+    .movie-meta {
+
+        font-size:
+            13px !important;
+
+        gap:
+            14px !important;
+
+    }
+
+
+    .movie-meta .movie-rating {
+
+        font-size:
+            14px !important;
+
+    }
+
+
+    .movie-info .movie-genres {
+
+        font-size:
+            12px !important;
+
+        margin-top:
+            13px !important;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
